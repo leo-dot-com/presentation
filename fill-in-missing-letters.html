@@ -2,218 +2,212 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fill in the Missing Letter Game</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Missing Letter Game</title>
     <style>
-        body {
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
             font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+
+        body {
             background: linear-gradient(to bottom right, #ffcccb, #ffe4b5);
-            color: #333;
+            min-height: 100vh;
+            padding: 1rem;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            padding: 1.5rem;
+            width: 100%;
+            max-width: 500px;
+            margin: 1rem 0;
+        }
+
+        h1 {
+            color: #ff4500;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
             text-align: center;
         }
-        .container {
-            background-color: white;
-            border-radius: 15px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            padding: 30px;
-            width: 90%;
-            max-width: 500px;
-        }
-        h1 {
-            margin-bottom: 20px;
-            font-size: 36px;
-            color: #ff4500;
-        }
-        .word {
-            font-size: 50px;
-            margin: 20px 0;
-            letter-spacing: 5px;
+
+        .word-display {
+            font-size: 2.5rem;
             color: #007bff;
+            margin: 1.5rem 0;
+            letter-spacing: 3px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.5rem;
         }
-        .options {
-            margin: 20px 0;
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8rem;
+            margin: 1.5rem 0;
         }
-        button {
-            background-color: #28a745;
+
+        .option-btn {
+            background: #28a745;
             color: white;
             border: none;
             border-radius: 10px;
-            padding: 15px 20px;
+            padding: 1rem;
+            font-size: 1.5rem;
             cursor: pointer;
-            font-size: 20px;
-            margin: 5px;
-            transition: background-color 0.3s, transform 0.2s;
+            transition: transform 0.2s;
         }
-        button:hover {
-            background-color: #218838;
-            transform: scale(1.05);
+
+        .option-btn:active {
+            transform: scale(0.95);
         }
+
         .feedback {
-            margin-top: 20px;
-            font-size: 20px;
-            color: #555;
+            font-size: 1.2rem;
+            margin: 1rem 0;
+            min-height: 2rem;
+            text-align: center;
         }
-        .correct {
-            color: green;
-        }
-        .incorrect {
-            color: red;
-        }
-        .progress {
-            font-size: 18px;
-            margin-top: 15px;
+
+        .correct { color: green; }
+        .incorrect { color: red; }
+
+        .streak-counter {
+            font-size: 1.1rem;
             color: #ff8c00;
+            text-align: center;
+            margin: 1rem 0;
         }
-        .character {
-            margin-top: 20px;
-            width: 100px;
+
+        .nav-link {
+            color: #34495e;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 1rem 0;
+        }
+
+        .speaker-btn {
+            background: none;
+            border: none;
+            color: #007bff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Fill in the Missing Letter</h1>
-        <div id="missing_letter" style="display:none;">{{ missing_letter }}</div>
-        <div id="original_word" style="display:none;">{{ blank_word }}</div>
-        <input type="hidden" id="correct-word" value="{{ word }}">
-        <span style="display: flex; flex-direction: row; align-items: center; justify-content: center;">
-            <div class="word" id="wordDisplay">{{ blank_word }}</div>
-            <i class="fas fa-volume-up" onclick="speakWord(document.getElementById('correct-word').value)" style="cursor: pointer; margin-left: 10px; font-size: 25px;"></i>
-        </span>
-        <div class="options" id="optionsContainer">
-            {% for option in options %}
-                <button onclick="checkAnswer('{{ option }}')">{{ option | upper }}</button>
-            {% endfor %}
+        <div class="word-display">
+            <span id="wordDisplay"></span>
+            <button class="speaker-btn" onclick="speakWord()">🔊</button>
         </div>
+        <div class="options-grid" id="optionsContainer"></div>
         <div class="feedback" id="feedback"></div>
-        <div class="progress" id="progress"><p>Current Streak: {{ current_streak }}</p><p>Longest Streak: {{ longest_streak }}</p></div>
-    </div>
-    <div style="display: flex; justify-content: center; align-items: center; margin-top: 1em;">
-        <a href="/dashboard" style="color: var(--primary-color);">Back to your Exercise Dashboard</a>
-    </div>
-
-    <audio id="correctSound" src="{{ url_for('static', filename='audio/correct.mp3') }}"></audio>
-    <audio id="incorrectSound" src="{{ url_for('static', filename='audio/incorrect.mp3') }}"></audio>
-    <footer>
-        <div id="Row" style="display: flex; width: 100%; justify-content: center; margin-bottom: 0em;">
-            <img src="{{ url_for('static', filename='logo-no_bg.png') }}" alt="" style="width: 50%;">
+        <div class="streak-counter">
+            <p>Current Streak: <span id="currentStreak">0</span></p>
+            <p>Longest Streak: <span id="longestStreak">0</span></p>
         </div>
-    </footer>
+    </div>
+    <a href="/dashboard" class="nav-link">Back to Dashboard</a>
 
     <script>
-        let correctLetter = '{{ missing_letter }}'; // Change to let
-        let originalWord = '{{ blank_word }}'; // Change to let
-        let blankIndex = originalWord.indexOf('_'); // Change to let
-    
+        // Game Data
+        const words = [
+            { word: "ELEPHANT", blankIndex: 3 },
+            { word: "KANGAROO", blankIndex: 2 },
+            { word: "COMPUTER", blankIndex: 4 },
+            { word: "SUNSHINE", blankIndex: 5 },
+            { word: "BUTTERFLY", blankIndex: 6 }
+        ];
+
+        let currentWord;
+        let correctLetter;
+        let options = [];
+        let currentStreak = localStorage.getItem('currentStreak') || 0;
+        let longestStreak = localStorage.getItem('longestStreak') || 0;
+
+        // Initialize game
+        function initGame() {
+            currentWord = words[Math.floor(Math.random() * words.length)];
+            correctLetter = currentWord.word[currentWord.blankIndex];
+            
+            // Generate options
+            options = [correctLetter];
+            while (options.length < 4) {
+                const randomChar = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+                if (!options.includes(randomChar)) options.push(randomChar);
+            }
+            options.sort(() => Math.random() - 0.5);
+
+            // Update display
+            const blankedWord = currentWord.word.slice(0, currentWord.blankIndex) + '_' + 
+                             currentWord.word.slice(currentWord.blankIndex + 1);
+            document.getElementById('wordDisplay').textContent = blankedWord;
+            
+            // Create buttons
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = options.map(letter => `
+                <button class="option-btn" onclick="checkAnswer('${letter}')">${letter}</button>
+            `).join('');
+
+            // Update streak display
+            document.getElementById('currentStreak').textContent = currentStreak;
+            document.getElementById('longestStreak').textContent = longestStreak;
+        }
+
+        // Check answer
         function checkAnswer(selectedLetter) {
             const feedbackElement = document.getElementById('feedback');
-            const wordDisplay = document.getElementById('wordDisplay');
-            const correctSound = document.getElementById('correctSound');
-            const incorrectSound = document.getElementById('incorrectSound');
-    
-            console.log(`Selected Letter: ${selectedLetter}, Correct Letter: ${correctLetter}`);
-
-            fetch('/update_fill-in-missing-letter_answer_count', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ selectedLetter, correctLetter }) // Send user input and correct word to the server
-            });
             
-            // Replace the blank with the selected letter
-            let updatedWord = wordDisplay.textContent;
-            updatedWord = updatedWord.slice(0, blankIndex) + selectedLetter.toUpperCase() + updatedWord.slice(blankIndex + 1);
-    
-            // Check if the answer is correct
             if (selectedLetter === correctLetter) {
                 feedbackElement.textContent = "Correct! Great job!";
                 feedbackElement.className = "feedback correct";
-                correctSound.play();
-    
-                // Update user's correct answers and current streak
-                fetch('/update_stats', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        correct: true
-                    }),
-                });
-    
-                // Update the displayed word immediately
-                wordDisplay.textContent = updatedWord;
-    
-                // Fetch a new word after a brief delay
+                currentStreak++;
+                if (currentStreak > longestStreak) {
+                    longestStreak = currentStreak;
+                    localStorage.setItem('longestStreak', longestStreak);
+                }
+                localStorage.setItem('currentStreak', currentStreak);
+                
                 setTimeout(() => {
-                    fetch('/fill-in-missing-letters')  // Adjust this URL if necessary
-                        .then(response => response.text())
-                        .then(html => {
-                            // Replace the content with the new exercise
-                            document.body.innerHTML = html;
-    
-                            // Reinitialize the script context
-                            const newWordDisplay = document.getElementById('wordDisplay');
-                            const newCorrectLetter = document.getElementById('missing_letter').textContent; // Get the new correct letter from the HTML
-                            const newOriginalWord = document.getElementById('wordDisplay').textContent; // Get the new word from the HTML
-                            blankIndex = newOriginalWord.indexOf('_'); // Update blank index
-    
-                            // Update the local variables
-                            correctLetter = newCorrectLetter; // Update the correct letter
-                            originalWord = newOriginalWord; // Update the original word
-    
-                            // Log the new correct letter
-                            console.log(`New Selected Letter: ${correctLetter}`);
-                        });
+                    feedbackElement.textContent = '';
+                    initGame();
                 }, 1000);
             } else {
-                // If the answer is incorrect, keep the word displayed
-                feedbackElement.textContent = `Oops! The chosen letter was incorrect. Please try again!`;
+                feedbackElement.textContent = `Try again! Correct letter was ${correctLetter}`;
                 feedbackElement.className = "feedback incorrect";
-                incorrectSound.play();
-    
-                // Update user's current streak if the answer is incorrect
-                fetch('/update_stats', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        correct: false
-                    }),
-                });
+                currentStreak = 0;
+                localStorage.setItem('currentStreak', currentStreak);
             }
-        }
-        function speakWord(word) {
-    if (!word) {
-        console.error('No word provided for speech');
-        return; // Exit if no word is provided
-    }
 
-    fetch('/speak_word', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ word: word })
-    })
-    .then(response => response.json())
-    .then(data => {
-        const audio = new Audio(data.audio_file); // Use the base64 audio string
-        audio.play(); // Play the audio
-    })
-    .catch(error => {
-        console.error('Error:', error);
-    });
-}
+            updateStreakDisplay();
+        }
+
+        // Text-to-Speech
+        function speakWord() {
+            const word = currentWord.word.toLowerCase().replace('_', correctLetter.toLowerCase());
+            const utterance = new SpeechSynthesisUtterance(word);
+            speechSynthesis.speak(utterance);
+        }
+
+        function updateStreakDisplay() {
+            document.getElementById('currentStreak').textContent = currentStreak;
+            document.getElementById('longestStreak').textContent = longestStreak;
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', initGame);
     </script>
 </body>
 </html>
