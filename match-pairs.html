@@ -2,388 +2,317 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Match the Pairs</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
-        /* General Styles */
-        body {
-            font-family: 'Comic Sans MS', cursive, sans-serif;
-            background: linear-gradient(to bottom right, #ffebcd, #ffe4e1);
-            color: #333;
+        * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(to bottom right, #ffebcd, #ffe4e1);
+            min-height: 100vh;
+            padding: 1rem;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            overflow-x: hidden;
         }
 
         .container {
             background: white;
-            padding: 2rem;
-            margin: 1.8em;
             border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            max-width: 800px;
-            width: 90%;
-            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            width: 100%;
+            max-width: 600px;
+            margin: 1rem 0;
         }
 
         h1 {
-            font-size: 2.5rem;
             color: #4a4e69;
+            font-size: 1.8rem;
             margin-bottom: 1.5rem;
-            margin-top: 0;
-            animation: fadeIn 1s ease-in-out;
+            text-align: center;
         }
 
         .grid-container {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin: 20px auto;
-            max-width: 800px;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.8rem;
+            margin: 1.5rem 0;
         }
 
-/* Original card styling */
-.card {
-    background-color: #fff;
-    border: 3px solid #ff6f61;
-    padding: 25px;
-    cursor: pointer;
-    transition: 0.3s;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    position: relative;
-    perspective: 1000px; /* Adds depth for the flip effect */
-    transform-style: preserve-3d; /* Ensures 3D transformations */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    transition: background-color 0.5s ease, transform 0.6s ease; /* Smooth transitions */
-}
-
-/* Flipping effect */
-.card.flipped {
-    transform: rotateY(180deg); /* Flips the card */
-}
-
-.card.matched {
-    pointer-events: none; /* Disables further clicks */
-}
-
-.card .front,
-.card .back {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    backface-visibility: hidden; /* Hides the back of the card when flipped */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border-radius: 10px;
-    padding: 20px; /* Match the original padding */
-    box-sizing: border-box; /* Ensures padding is included in width/height */
-}
-
-.card .front {
-    background-color: #fff; /* Front side color */
-    /*border: 2px solid #ff6f61; /* Match the original border */
-    transform: rotateY(0deg); /* Front side is visible by default */
-}
-
-.card .back {
-    background-color: #d3d3d3; /* Back side color (uniform color for matched cards) */
-    /*border: 2px solid #ff6f61; /* Match the original border */
-    transform: rotateY(180deg); /* Back side is hidden by default */
-}
-
-/* Light green background for matched pairs */
-.card.matched .back {
-    background-color: #90ee90; /* Light green */
-    /*border: 2px solid #ff6f61; /* Match the original border */
-}
-
-/* Temporary red background for incorrect pairs */
-.card.incorrect {
-    background-color: #ff6b6b; /* Light red */
-    transition: background-color 0.5s ease; /* Smooth transition */
-}
-
-        button {
-            padding: 14px 65px;
-            width: 45%;
-            border: none;
-            border-radius: 25px;
-            background: linear-gradient(to right, #ff7f50, #ff6f61);
-            color: white;
+        .card {
+            aspect-ratio: 1;
+            background: white;
+            border: 2px solid #ff6f61;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             cursor: pointer;
-            margin: 0.5rem;
-            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #4a4e69;
+            transition: transform 0.3s, background 0.3s;
+            position: relative;
+            transform-style: preserve-3d;
         }
 
-        button:hover {
-            background: linear-gradient(to right, #ff6347, #ff6f61);
-            transform: translateY(-2px);
+        .card .front, .card .back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 8px;
         }
 
-        #difficulty-rating {
-            display: flex; /* Use flexbox for row layout */
-            justify-content: center; /* Center the buttons */
-            margin-top: 1rem; /* Space above */
+        .card .front {
+            background: white;
+            transform: rotateY(0deg);
         }
 
-        #difficulty-rating button {
-            padding: 7.5px 80px;
+        .card .back {
+            background: #f8f8f8;
+            transform: rotateY(180deg);
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card.matched .back {
+            background: #90ee90;
+        }
+
+        .card.incorrect {
+            background: #ff6b6b;
+        }
+
+        .stats {
+            text-align: center;
+            margin: 1rem 0;
+            font-size: 1.1rem;
+            color: #4a4e69;
+        }
+
+        .nav-link {
+            color: #4a4e69;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .feedback-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 0.8rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .feedback-btn {
+            padding: 0.8rem 1.2rem;
             border: 2px solid #ff6f61;
             border-radius: 25px;
-            cursor: pointer;
             background: none;
-            margin: 0 0.5rem; /* Space between buttons */
-            display: flex;
-            flex-direction: column; /* Stack icon above text */
-            align-items: center; /* Center items */
-        }
-
-        #difficulty-rating button i {
-            font-size: 1.5rem; /* Increase icon size */
-            color: #ff6f61;
-            margin-bottom: 5px; /* Space between icon and text */
-        }
-
-        #difficulty-rating button div {
-            font-size: 0.6rem; /* Smaller text for reference */
-            text-align: center; /* Center the text */
             color: #ff6f61;
             font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
-        /* Responsive Design */
-        @media (max-width: 750px) {
-            h1 {
-                font-size: 2rem;
+        @media (min-width: 480px) {
+            .grid-container {
+                grid-template-columns: repeat(4, 1fr);
             }
-
-            button {
-                padding: 10px 20px;
-                font-size: 0.9rem;
-            }
-        }
-
-        @keyframes fadeIn {
-            0% { opacity: 0; transform: translateY(20px); }
-            100% { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
-    <br><br>
     <div class="container">
         <h1>Match the Pairs</h1>
-        <div class="grid-container">
-            {% for pair in pairs %}
-                <div class="card" data-word="{{ pair }}">
-                    <div class="front">{{ pair }}</div>
-                    <div class="back"></div>
-                </div>
-            {% endfor %}
+        <div class="grid-container" id="gameGrid"></div>
+        <div class="stats">
+            <p>Games Completed: <span id="gamesCompleted">0</span></p>
+            <p>Current Streak: <span id="currentStreak">0</span></p>
         </div>
-        <p>Games Completed: <span id="match-pairs-completed">{{ user.match_pairs_completed }}</span></p>
     </div>
 
-    <div style="display: flex; justify-content: center; align-items: center; margin-top: 1em;">
-        <a href="/dashboard" style="color: #4a4e69;">Back to your Exercise Dashboard</a>
-    </div>
+    <a href="index.html" class="nav-link">Back to Dashboard</a>
 
     <div class="container">
-        <h1 style="font-size: 2em;">Your Feedback</h1>
-        <div id="difficulty-rating" style="margin-top: 1.5rem;">
-            <span style="display: flex; flex-direction: row; justify-content: center; align-items: center;">
-                <button onclick="rateDifficulty('too_easy')">
-                    <i class="fas fa-meh"></i>
-                    <div>Too Easy</div>
-                </button>
-                <button onclick="rateDifficulty('just_right')">
-                    <i class="fas fa-smile"></i>
-                    <div>Just Right</div>
-                </button>
-                <button onclick="rateDifficulty('too_difficult')">
-                    <i class="fas fa-frown"></i>
-                    <div>Too Difficult</div>
-                </button>
-            </span>
+        <h1>Your Feedback</h1>
+        <div class="feedback-buttons">
+            <button class="feedback-btn" onclick="rateDifficulty('too_easy')">👍 Too Easy</button>
+            <button class="feedback-btn" onclick="rateDifficulty('just_right')">😊 Just Right</button>
+            <button class="feedback-btn" onclick="rateDifficulty('too_difficult')">👎 Too Hard</button>
         </div>
     </div>
-    <br><br><br>
-
-    <footer>
-        <div id="Row" style="display: flex; width: 100%; justify-content: center;">
-            <img src="{{ url_for('static', filename='logo-no_bg.png') }}" alt="" style="width: 50%;">
-        </div>
-    </footer>
-
-    <audio id="success-sound" src="static/audio/correct.mp3" preload="auto"></audio>
-    <audio id="error-sound" src="static/audio/incorrect.mp3" preload="auto"></audio>
 
     <script>
-let firstCard = null;
-let secondCard = null;
-let lockBoard = false;
-let matches = 0;
-
-document.querySelectorAll('.card').forEach(card => {
-    card.addEventListener('click', flipCard);
-});
-
-function flipCard() {
-    if (lockBoard || this === firstCard || this.classList.contains('matched')) return;
-    this.classList.add('flipped');
-
-    if (!firstCard) {
-        firstCard = this;
-        return;
-    }
-
-    secondCard = this;
-    lockBoard = true;
-
-    checkForMatch();
-}
-
-function checkForMatch() {
-    const isMatch = firstCard.dataset.word === secondCard.dataset.word;
-    if (isMatch) {
-        disableCards();
-    } else {
-        unflipCardsWithError();
-    }
-}
-
-function disableCards() {
-    matches++;
-    firstCard.classList.add('matched');
-    secondCard.classList.add('matched');
-    resetBoard();
-
-    // Check if all pairs are matched
-    if (matches === (document.querySelectorAll('.card').length / 2)) {
-        const successSound = document.getElementById('success-sound');
-        successSound.play(); // Play success sound only when all pairs are matched
-
-        // Increment the match_pairs_completed counter in the backend
-        fetch('/increment_match_pairs_completed', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                console.log('Match pairs completed counter incremented.');
-                // Update the displayed completed games count
-                const completedCountElement = document.getElementById('match-pairs-completed');
-                completedCountElement.textContent = parseInt(completedCountElement.textContent) + 1;
-            }
-        })
-        .catch(error => console.error('Error incrementing match pairs completed:', error));
-
-        setTimeout(() => {
-            resetGame(); // Reset the game after a delay
-        }, 1000); // Reset after 1 second
-    }
-}
-
-function unflipCardsWithError() {
-    // Add the red background to indicate incorrect match
-    firstCard.classList.add('incorrect');
-    secondCard.classList.add('incorrect');
-    const errorSound = document.getElementById('error-sound');
-    errorSound.play(); // Play error sound
-
-    setTimeout(() => {
-        // Remove the red background and unflip the cards
-        firstCard.classList.remove('incorrect');
-        secondCard.classList.remove('incorrect');
-        firstCard.classList.remove('flipped');
-        secondCard.classList.remove('flipped');
-        resetBoard();
-    }, 1000); // Show the red background for 1 second
-}
-
-function resetBoard() {
-    [firstCard, secondCard, lockBoard] = [null, null, false];
-}
-
-function resetGame() {
-    matches = 0; // Reset matches count
-    document.querySelectorAll('.card').forEach(card => {
-        card.classList.remove('flipped');
-        card.classList.remove('matched'); // Remove the matched class
-    });
-
-    // Fetch new pairs from the server
-    fetch('/match-pairs')
-        .then(response => response.text())
-        .then(html => {
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            const newGridContainer = doc.querySelector('.grid-container');
-            const newCards = Array.from(newGridContainer.children);
-
-            // Shuffle the new cards array
-            for (let i = newCards.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [newCards[i], newCards[j]] = [newCards[j], newCards[i]];
-            }
-
-            // Clear the grid and append the shuffled new cards
-            const gridContainer = document.querySelector('.grid-container');
-            gridContainer.innerHTML = '';
-            newCards.forEach(card => {
-                gridContainer.appendChild(card);
-            });
-
-            // Reattach event listeners to the new cards
-            document.querySelectorAll('.card').forEach(card => {
-                card.addEventListener('click', flipCard);
-            });
-        })
-        .catch(error => console.error('Error fetching new pairs:', error));
-}
-
-function rateDifficulty(rating) {
-    let adjustment = 0;
-
-    if (rating === 'too_easy') {
-        adjustment = 1;  // Increase difficulty
-    } else if (rating === 'too_difficult') {
-        adjustment = -1; // Decrease difficulty
-    }
-
-    fetch('/update_match_pairs_difficulty', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ adjustment: adjustment })
-    })
-    .then(response => response.json())
-    .then(data => {
-        const newDifficulty = data.new_difficulty;
-        const difficultyLevels = [
-            "A Gentle Start! (0)",   // 0
-            "Just a Little Easy! (1)", // 1
-            "Perfectly Balanced! (2)",  // 2
-            "A Fun Challenge! (3)",    // 3
+        // Game Data - Can be expanded with more word pairs
+        const wordPairs = [
+            ["CAT", "DOG"],
+            ["SUN", "MOON"],
+            ["TREE", "LEAF"],
+            ["BOOK", "PEN"],
+            ["HAPPY", "SAD"],
+            ["UP", "DOWN"],
+            ["HOT", "COLD"],
+            ["DAY", "NIGHT"]
         ];
 
-        const description = difficultyLevels[newDifficulty];
-        alert('Thank you for your feedback! We set the new difficulty level to ' + description);
-        window.location.href = '/match-pairs'; // Reloads the match pairs page
-    });
-}
+        // Game State
+        let firstCard = null;
+        let secondCard = null;
+        let lockBoard = false;
+        let matchedPairs = 0;
+        let gamesCompleted = localStorage.getItem('matchPairsGamesCompleted') || 0;
+        let currentStreak = localStorage.getItem('matchPairsCurrentStreak') || 0;
+        let longestStreak = localStorage.getItem('matchPairsLongestStreak') || 0;
+
+        // Initialize Game
+        function initGame() {
+            const gameGrid = document.getElementById('gameGrid');
+            gameGrid.innerHTML = '';
+            
+            // Select random word pairs (4 pairs for 8 cards)
+            const selectedPairs = [...wordPairs].sort(() => 0.5 - Math.random()).slice(0, 4);
+            const cards = [];
+            
+            // Create card elements
+            selectedPairs.forEach(pair => {
+                cards.push(createCard(pair[0]));
+                cards.push(createCard(pair[1]));
+            });
+            
+            // Shuffle and add to grid
+            cards.sort(() => 0.5 - Math.random()).forEach(card => {
+                gameGrid.appendChild(card);
+            });
+            
+            // Update stats display
+            document.getElementById('gamesCompleted').textContent = gamesCompleted;
+            document.getElementById('currentStreak').textContent = currentStreak;
+        }
+
+        // Create card element
+        function createCard(word) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.dataset.word = word;
+            
+            const front = document.createElement('div');
+            front.className = 'front';
+            front.textContent = word;
+            
+            const back = document.createElement('div');
+            back.className = 'back';
+            
+            card.appendChild(front);
+            card.appendChild(back);
+            
+            card.addEventListener('click', flipCard);
+            return card;
+        }
+
+        // Flip card when clicked
+        function flipCard() {
+            if (lockBoard || this === firstCard || this.classList.contains('matched')) return;
+            
+            this.classList.add('flipped');
+            
+            if (!firstCard) {
+                firstCard = this;
+                return;
+            }
+            
+            secondCard = this;
+            lockBoard = true;
+            
+            checkForMatch();
+        }
+
+        // Check if cards match
+        function checkForMatch() {
+            const isMatch = firstCard.dataset.word === secondCard.dataset.word;
+            
+            if (isMatch) {
+                disableCards();
+            } else {
+                unflipCards();
+            }
+        }
+
+        // Disable matched cards
+        function disableCards() {
+            firstCard.classList.add('matched');
+            secondCard.classList.add('matched');
+            matchedPairs++;
+            
+            if (matchedPairs === 4) {
+                currentStreak++;
+                gamesCompleted++;
+                if (currentStreak > longestStreak) {
+                    longestStreak = currentStreak;
+                    localStorage.setItem('matchPairsLongestStreak', longestStreak);
+                }
+                localStorage.setItem('matchPairsGamesCompleted', gamesCompleted);
+                localStorage.setItem('matchPairsCurrentStreak', currentStreak);
+                
+                setTimeout(() => {
+                    alert('Great job! All pairs matched!');
+                    resetGame();
+                }, 500);
+            }
+            
+            resetBoard();
+        }
+
+        // Unflip non-matching cards
+        function unflipCards() {
+            firstCard.classList.add('incorrect');
+            secondCard.classList.add('incorrect');
+            
+            setTimeout(() => {
+                firstCard.classList.remove('flipped', 'incorrect');
+                secondCard.classList.remove('flipped', 'incorrect');
+                currentStreak = 0;
+                localStorage.setItem('matchPairsCurrentStreak', currentStreak);
+                document.getElementById('currentStreak').textContent = currentStreak;
+                resetBoard();
+            }, 1000);
+        }
+
+        // Reset board state
+        function resetBoard() {
+            [firstCard, secondCard, lockBoard] = [null, null, false];
+        }
+
+        // Reset entire game
+        function resetGame() {
+            matchedPairs = 0;
+            initGame();
+        }
+
+        // Difficulty rating
+        function rateDifficulty(rating) {
+            alert(`Thank you for your feedback! You rated this game as ${rating.replace('_', ' ')}.`);
+            // In a real app, you might adjust difficulty here
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', initGame);
     </script>
 </body>
 </html>
