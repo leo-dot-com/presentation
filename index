@@ -1,1 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercise Dashboard</title>
+<style>
 
+    #Row {
+        display: flex;
+        flex-direction: row;
+    }
+    #Column {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 50%;
+        padding: 1em;
+    }
+
+    #Column img {
+        justify-content: center;
+        align-items: center;
+        width: 80%;
+    }
+
+    footer {
+        margin-top: 40px;
+        font-size: 0.9em;
+        text-align: center;
+        color: #777;
+    }
+    #image {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 80%;
+    }
+
+    :root {
+        --primary-color: #34495e;
+        --secondary-color: #92b5d9;
+        --accent-color: #2ecc71;
+        --light-bg: #dbe8f4;
+    }
+
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+        background: linear-gradient(to bottom right, #dbe8f4, #8ab8e8);
+        color: #2c3e50;
+        padding: 2rem;
+    }
+
+    header {
+        background-color: var(--primary-color);
+        display: flex;
+        color: white;
+        padding: 1rem 2rem;
+        text-align: center;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+    }
+
+    header h1 {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    header p {
+        font-size: 1rem;
+    }
+
+    .exercise-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin: 0 auto;
+    }
+
+    .exercise-card {
+        position: relative; /* Add this line */
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+        text-align: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .exercise-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .static, .animated {
+        display: block; /* Change to block */
+        margin: 0 auto; /* Center the images */
+        width: 80px;
+        height: auto;
+        margin-bottom: 15px;
+        margin-top: 15px;
+    }
+
+    .animated {
+        display: none; /* Keep this to hide the animated image by default */
+        width: 110px;
+        height: auto;
+        margin-bottom: 0px;
+        margin-top: 0px;
+    }
+
+    .exercise-card:hover .static {
+        display: none; /* Hide static image on hover */
+    }
+
+    .exercise-card:hover .animated {
+        display: block; /* Show animated image on hover */
+    }
+
+    .exercise-card h2 {
+        font-size: 1.5rem;
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .exercise-card p {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .start-btn {
+        display: inline-block;
+        background-color: var(--accent-color);
+        color: white;
+        padding: 0.5rem 1.5rem;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+
+    .start-btn:hover {
+        background-color: #27ae60;
+    }
+
+    footer {
+        text-align: center;
+        margin-top: 2rem;
+        font-size: 0.9rem;
+        color: #777;
+    }
+    #Column {
+        flex-direction: column;
+    }
+    #Column img {
+        width: 100%;
+        margin-left: 0;
+    }
+    #Column h1, p {
+        display: flex;
+        flex-direction: center;
+        align-items: center;
+    }
+</style>
+</head>
+<body>
+    <header>
+        <div id="Column" style="display: flex; flex: 1;">
+            <a href="/account"><img src="https://img.icons8.com/ios_filled/512w/FFFFFF/circled-left-2.png" alt=""></a>
+        </div>
+        <div id="Column" style="display: flex; flex: 20; flex-direction: center; align-items: center;">
+            <h1>Interactive Exercises for<span style="color: #34495e;">.</span><span style="color: #a5c6e9;"> {{ user.username }}</span> </h1>
+            <p>Choose an exercise to help develop essential skills</p>
+        </div>
+    </header>
+<section class="exercise-grid">
+    <!-- Read-Along Exercise -->
+    <div class="exercise-card">
+        <img class="static" src="{{ url_for('static', filename='finger.png') }}" alt="Read-Along Icon">
+        <img class="animated" src="https://cdn-icons-gif.flaticon.com/16767/16767199.gif" alt="Read-Along Icon">
+        <h2>Read-Along</h2>
+        <p>Practice reading with guided audio for improved comprehension.</p>
+        <a href="/read-along" class="start-btn">Start</a>
+    </div>
+
+    <!-- Writing Exercise -->
+    <div class="exercise-card">
+        <img class="static" src="{{ url_for('static', filename='online-learning.png') }}" alt="Keyboard Icon">
+        <img class="animated" src="https://cdn-icons-gif.flaticon.com/18675/18675093.gif" alt="Keyboard Icon">        
+        <h2>Writing</h2>
+        <p>Enhance writing skills through interactive handwriting activities.</p>
+        <a href="/typing_exercise" class="start-btn">Start</a>
+    </div>
+
+    <!-- Match the Pairs Exercise -->
+    <div class="exercise-card">
+        <img class="static" src="{{ url_for('static', filename='puzzle.png') }}" alt="Match the Pairs Icon">
+        <img class="animated" src="https://cdn-icons-gif.flaticon.com/18821/18821818.gif" alt="Match the Pairs Icon">
+        <h2>Match the Pairs</h2>
+        <p>Strengthen memory by matching words and their meanings.</p>
+        <a href="/match-pairs" class="start-btn">Start</a>
+    </div>
+
+    <!-- Fill the Missing Vowel Exercise -->
+    <div class="exercise-card">
+        <img class="static" src="{{ url_for('static', filename='bear.png') }}" alt="Fill Missing Letter Icon">
+        <img class="animated" src="https://cdn-icons-gif.flaticon.com/18821/18821782.gif" alt="Fill Missing Letter Icon">
+        <h2>Fill the Missing Letter</h2>
+        <p>Build vocabulary and spelling skills by completing words.</p>
+        <a href="/fill-in-missing-letters" class="start-btn">Start</a>
+    </div>
+</section>
+<br>
+<section class="exercise-grid">
+    <!-- Follow the given handwriting Exercise -->
+    <div class="exercise-card">
+        <img class="static" src="{{ url_for('static', filename='writing.png') }}" alt="Handwriting Icon">
+        <img class="animated" src="https://cdn-icons-gif.flaticon.com/17770/17770839.gif" alt="Handwriting Icon">
+        <h2>Handwriting Exercise</h2>
+        <p>Improve your handwriting by following the given pattern.</p>
+        <a href="/handwriting_exercise" class="start-btn">Start</a>
+    </div>
+
+    <!-- Classic Word Scramble Exercise -->
+    <div class="exercise-card">
+        <img class="static" src="{{ url_for('static', filename='cubes.png') }}" alt="Memory Icon">
+        <img class="animated" src="https://cdn-icons-gif.flaticon.com/11617/11617583.gif" alt="Memory Icon">
+        <h2>Word Scramble</h2>
+        <p>Nothing better than the classic memory game, can you beat the clock?</p>
+        <a href="/word_scramble" class="start-btn">Start</a>
+    </div>
+
+    <!-- Progress Report -->
+    <div class="exercise-card">
+        <img class="static" src="{{ url_for('static', filename='search.png') }}" alt="PDF Icon">
+        <img class="animated" src="https://cdn-icons-gif.flaticon.com/8948/8948330.gif" alt="PDF Icon">
+        <h2>Download Your Progress Report</h2>
+        <p>Click the button below to download your personalized PDF report.</p>
+        <a href="/generate_report" class="start-btn" target="_blank">Download Report</a>
+    </div>
+</section>
+<br>
+<section style="display: flex; justify-content: center;">
+    <a href="/homepage" class="start-btn" style="margin: 0.5em;">Back to homepage</a>
+    <a href="/" class="start-btn" style="margin: 0.5em;">Back to detection</a>
+</section>
+
+<footer>
+    <div id="Row" style="display: flex; width: 100%; justify-content: center; margin-bottom: 0em;">
+        <img src="{{ url_for('static', filename='logo-no_bg.png') }}" alt="" style="width: 30%;">
+    </div>
+</footer>
+
+<script>
+    function handleDownload(event) {
+        event.preventDefault();
+        fetch('/generate_report')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.blob();
+            })
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'dyslexia_report.pdf';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('There was an error generating the report. Please try again.');
+            });
+    }
+    </script>
+</body>
+</html>
