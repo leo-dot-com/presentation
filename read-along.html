@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Read-Along Game</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(to bottom right, #add8e6, #e0ffff);
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            background: white;
+            padding: 2rem;
+            margin: 1.8em;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            width: 90%;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            margin-bottom: 1.5rem;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        textarea {
+            width: 95%;
+            height: 120px;
+            padding: 15px;
+            font-size: 1rem;
+            border: 2px solid #836fff;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            resize: none;
+            transition: border-color 0.3s ease;
+        }
+
+        textarea:focus {
+            border-color: #2ecc71;
+            outline: none;
+        }
+
+button {
+    padding: 14px 65px;
+    width: 45%;
+    border: none;
+    border-radius: 25px;
+    color: #6a5acd;
+    border: 2px solid #836fff;
+    background: white;
+    cursor: pointer;
+    margin: 0.5rem;
+    transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column; /* Stack icon above text */
+    align-items: center; /* Center items */
+}
+
+button i {
+    font-size: 2rem; /* Adjust icon size */
+    margin-bottom: 5px; /* Space between icon and text */
+}
+
+button div {
+    font-size: 1rem; /* Smaller text for reference */
+    text-align: center; /* Center the text */
+}
+
+button:hover {
+    background: lightgray; /* Darker gradient on hover */
+    transform: translateY(-2px); /* Slight lift effect */
+}
+
+button:active {
+    transform: scale(0.95); /* Scale down on click */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Reduce shadow on active */
+}
+
+#difficulty-rating {
+    display: flex; /* Use flexbox for row layout */
+    justify-content: center; /* Center the buttons */
+    margin-top: 1rem; /* Space above */
+}
+
+#difficulty-rating button {
+    padding: 7.5px 65px;
+    border: 2px solid #836fff;
+    border-radius: 25px;
+    cursor: pointer;
+    background: none;
+    box-shadow: none;
+    margin: 0 0.5rem; /* Space between buttons */
+    display: flex;
+    flex-direction: column; /* Stack icon above text */
+    align-items: center; /* Center items */
+}
+
+#difficulty-rating button i {
+    font-size: 1.6rem; /* Increase icon size */
+    color: #836fff;
+    margin-bottom: 5px; /* Space between icon and text */
+}
+
+#difficulty-rating button div {
+    font-size: 0.8rem; /* Smaller text for reference */
+    text-align: center; /* Center the text */
+    color:#836fff;
+    font-weight: bold;
+}
+
+        #random-prompt {
+            font-style: italic;
+            color: #888;
+            margin: 1rem 0;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        #generated-text {
+            margin: 2rem 0;
+            font-size: 1.2rem;
+            color: #333;
+            line-height: 1.6;
+            text-align: left;
+            background: #f9f9f9;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .highlight {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .read {
+            color: #2ecc71;
+        }
+
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            textarea {
+                height: 100px;
+                font-size: 0.9rem;
+            }
+
+            button {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+
+            #generated-text {
+                font-size: 1rem;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<br>
+<body style="margin: 2em;">
+    <div class="container">
+        <h1>Read-Along</h1>
+        <textarea id="prompt" placeholder="Enter a prompt (e.g., 'Once upon a time...')"></textarea>
+        <br>
+        <span style="display: flex; flex-direction: row; justify-content: center; align-items: center;">
+            <button onclick="generateRandomPrompt()">
+                <i class="fas fa-dice"></i> <!-- Dice icon -->
+                <div>Generate Random Prompt</div>
+            </button>
+            <button onclick="generateText()">
+                <i class="fas fa-book-open"></i> <!-- Book icon -->
+                <div>Generate Story</div>
+            </button>
+        </span>
+        <div class="loader" id="loader"></div>
+        <p id="generated-text"></p>
+        <span style="display: flex; flex-direction: row; justify-content: center; align-items: center;">
+            <button onclick="playAudio()" style="width: 25%;">
+                <i class="fas fa-play"></i> <!-- Play icon -->
+                <div>Play</div>
+            </button>
+            <button onclick="stopAudio()" style="width: 25%;">
+                <i class="fas fa-stop"></i> <!-- Stop icon -->
+                <div>Stop</div>
+            </button>
+        </span>
+    </div>
+
+    <div style="display: flex; justify-content: center; align-items: center; margin-top: 1em;">
+        <a href="/dashboard" style="color: var(--primary-color);">Back to your Exercise Dashboard</a>
+    </div>
+
+    <div class="container" id="container" style="display: none;">
+        <div id="difficulty-rating" style="margin-top: 1.5rem;">
+            <span style="display: flex; flex-direction: row; justify-content: center; align-items: center;">
+                <button onclick="rateDifficulty('too_easy')">
+                    <i class="fas fa-meh"></i>
+                    <div>Too Easy</div>
+                </button>
+                <button onclick="rateDifficulty('just_right')">
+                    <i class="fas fa-smile"></i>
+                    <div>Just Right</div>
+                </button>
+                <button onclick="rateDifficulty('too_difficult')">
+                    <i class="fas fa-frown"></i>
+                    <div>Too Difficult</div>
+                </button>
+            </span>
+        </div>
+    </div>
+    <br><br>
+
+    <footer>
+        <div id="Row" style="display: flex; width: 100%; justify-content: center;">
+            <img src="{{ url_for('static', filename='logo-no_bg.png') }}" alt="" style="width: 50%;">
+        </div>
+    </footer>
+
+    <script>
+        let audio = null;  // Global variable to manage audio instance
+        let words = [];   // Array to store individual words
+        let currentWordIndex = 0; // Track the current word being spoken
+        let readWords = []; // Track words that have been read
+
+        async function generateText() {
+    const prompt = document.getElementById('prompt').value;
+    const loader = document.getElementById('loader');
+    const generatedText = document.getElementById('generated-text');
+
+    loader.style.display = 'block';
+
+    try {
+        const response = await fetch('/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: prompt })
+        });
+        const data = await response.json();
+        
+        // Set the generated text and split it into words for highlighting
+        generatedText.innerText = data.generated_text;
+        words = data.generated_text.split(' '); // Split text into words
+        readWords = []; // Reset read words
+        currentWordIndex = 0; // Reset current word index
+        highlightWord();
+
+        showDifficultyRating();  // Show the difficulty rating buttons
+    } catch (error) {
+        console.error('Error:', error);
+        generatedText.innerText = 'Failed to generate text. Please try again.';
+    } finally {
+        loader.style.display = 'none';
+    }
+}
+
+async function playAudio() {
+    const text = document.getElementById('generated-text').innerText;
+    if (!text) {
+        alert('Please generate text first!');
+        return;
+    }
+
+    const loader = document.getElementById('loader');
+    loader.style.display = 'block';  // Show loader
+
+    try {
+        await fetch('/tts', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: text })
+        });
+
+        if (audio) {
+            audio.pause();  // Stop previous audio
+        }
+        audio = new Audio('/static/output.mp3');
+
+        // Reset highlighting
+        currentWordIndex = 0;
+        readWords = [];
+        highlightWord();
+
+        // Play audio
+        audio.play();
+
+        // Update word highlighting as audio plays
+        audio.addEventListener('timeupdate', () => {
+            const duration = audio.duration;
+            const currentTime = audio.currentTime;
+            const progress = (currentTime / duration) * words.length;
+            currentWordIndex = Math.floor(progress);
+            highlightWord();
+        });
+
+        // Reset when audio ends
+        audio.addEventListener('ended', () => {
+            currentWordIndex = 0;
+            highlightWord();
+        });
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Failed to generate audio. Please try again.');
+    } finally {
+        loader.style.display = 'none';  // Hide loader
+    }
+}
+
+        function stopAudio() {
+            if (audio) {
+                audio.pause();  // Stop audio
+                audio.currentTime = 0;  // Reset audio to start
+                currentWordIndex = 0;  // Reset word highlighting
+                highlightWord();
+            }
+        }
+
+        function highlightWord() {
+    const generatedText = document.getElementById('generated-text');
+    let highlightedText = '';
+    
+    words.forEach((word, index) => {
+        if (index < currentWordIndex) {
+            // Words that have been read
+            highlightedText += `<span class="read">${word}</span> `;
+        } else if (index === currentWordIndex) {
+            // Current word being spoken
+            highlightedText += `<span class="highlight">${word}</span> `;
+        } else {
+            // Words yet to be read
+            highlightedText += `${word} `;
+        }
+    });
+    
+    generatedText.innerHTML = highlightedText.trim(); // Use innerHTML to allow highlighting
+}
+
+        const prompts = [
+        "Once upon a time, in a land far, far away...",
+        "In a world where animals could talk...",
+        "Deep in the enchanted forest, there was...",
+        "On a rainy day, a mysterious letter arrived...",
+        "In a spaceship traveling to a distant planet...",
+        "A young explorer discovered a hidden treasure...",
+        "In a small village, there lived a brave knight...",
+        "One night, the stars began to fall from the sky...",
+        "A magical door appeared in the middle of the park...",
+        "In a world where dreams came to life...",
+        "A curious cat found a map to a secret island...",
+        "In a kingdom where time stood still...",
+        "A group of friends stumbled upon a hidden cave...",
+        "On a snowy mountain, there was a glowing cabin...",
+        "A robot woke up with no memory of its past...",
+        "In a city where everyone had superpowers...",
+        "A lonely dragon befriended a tiny mouse...",
+        "A wizard lost his wand and needed help finding it...",
+        "In a library, the books started coming to life...",
+        "A young inventor created a machine that could talk to animals...",
+        "On a beach, a message in a bottle washed ashore...",
+        "In a world where colors had magical powers...",
+        "A time traveler arrived in the wrong century...",
+        "A mysterious carnival appeared overnight...",
+        "A child found a key that opened any door...",
+        "In a desert, a hidden oasis appeared...",
+        "A pirate ship sailed through the clouds...",
+        "A scientist discovered a way to shrink people...",
+        "In a garden, the flowers could sing...",
+        "A young detective solved mysteries with her pet parrot...",
+        "In a world where shadows had a life of their own...",
+        "A magical paintbrush brought drawings to life...",
+        "A group of kids found a portal to another dimension...",
+        "In a castle, the paintings could talk...",
+        "A young musician discovered a melody that could heal...",
+        "In a forest, the trees could walk...",
+        "A spaceship crash-landed in a small town...",
+        "A genie granted three wishes, but with a twist...",
+        "In a world where the moon never set...",
+        "A young chef created dishes that could tell stories..."
+    ];
+
+        function generateRandomPrompt() {
+            const randomPrompt = prompts[Math.floor(Math.random() * prompts.length)];
+            document.getElementById('prompt').value = randomPrompt;
+        }
+
+        function rateDifficulty(rating) {
+    let adjustment = 0;
+
+    // Determine the adjustment based on user feedback
+    if (rating === 'too_easy') {
+        adjustment = 1;  // Increase difficulty
+    } else if (rating === 'too_difficult') {
+        adjustment = -1; // Decrease difficulty
+    }
+    
+    fetch('/update_difficulty', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ adjustment: adjustment })
+    }).then(response => response.json())
+      .then(data => {
+          // Map difficulty levels to comforting descriptions
+          const difficultyLevels = [
+              "A Gentle Start! (0)",   // 0
+              "Just a Little Easy! (1)", // 1
+              "Perfectly Balanced! (2)",  // 2
+              "A Fun Challenge! (3)",    // 3
+              "Close to Perfection! (4)", // 4
+              "The Final Step!! (5)"     // 5
+          ];
+
+          // Get the new difficulty level and the corresponding description
+          const newDifficulty = data.new_difficulty;
+          const description = difficultyLevels[newDifficulty];
+
+          alert('Thank you for your feedback! We set the new difficulty level to ' + description);
+      });
+}
+
+// Show the difficulty rating buttons after the story is generated
+function showDifficultyRating() {
+    document.getElementById('difficulty-rating').style.display = 'block';
+    document.getElementById('container').style.display = 'block';
+}
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fill in the Missing Letter Game</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            background: linear-gradient(to bottom right, #ffcccb, #ffe4b5);
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+        .container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 36px;
+            color: #ff4500;
+        }
+        .word {
+            font-size: 50px;
+            margin: 20px 0;
+            letter-spacing: 5px;
+            color: #007bff;
+        }
+        .options {
+            margin: 20px 0;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 15px 20px;
+            cursor: pointer;
+            font-size: 20px;
+            margin: 5px;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+        button:hover {
+            background-color: #218838;
+            transform: scale(1.05);
+        }
+        .feedback {
+            margin-top: 20px;
+            font-size: 20px;
+            color: #555;
+        }
+        .correct {
+            color: green;
+        }
+        .incorrect {
+            color: red;
+        }
+        .progress {
+            font-size: 18px;
+            margin-top: 15px;
+            color: #ff8c00;
+        }
+        .character {
+            margin-top: 20px;
+            width: 100px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Fill in the Missing Letter</h1>
+        <div id="missing_letter" style="display:none;">{{ missing_letter }}</div>
+        <div id="original_word" style="display:none;">{{ blank_word }}</div>
+        <input type="hidden" id="correct-word" value="{{ word }}">
+        <span style="display: flex; flex-direction: row; align-items: center; justify-content: center;">
+            <div class="word" id="wordDisplay">{{ blank_word }}</div>
+            <i class="fas fa-volume-up" onclick="speakWord(document.getElementById('correct-word').value)" style="cursor: pointer; margin-left: 10px; font-size: 25px;"></i>
+        </span>
+        <div class="options" id="optionsContainer">
+            {% for option in options %}
+                <button onclick="checkAnswer('{{ option }}')">{{ option | upper }}</button>
+            {% endfor %}
+        </div>
+        <div class="feedback" id="feedback"></div>
+        <div class="progress" id="progress"><p>Current Streak: {{ current_streak }}</p><p>Longest Streak: {{ longest_streak }}</p></div>
+    </div>
+    <div style="display: flex; justify-content: center; align-items: center; margin-top: 1em;">
+        <a href="/dashboard" style="color: var(--primary-color);">Back to your Exercise Dashboard</a>
+    </div>
+
+    <audio id="correctSound" src="{{ url_for('static', filename='audio/correct.mp3') }}"></audio>
+    <audio id="incorrectSound" src="{{ url_for('static', filename='audio/incorrect.mp3') }}"></audio>
+    <footer>
+        <div id="Row" style="display: flex; width: 100%; justify-content: center; margin-bottom: 0em;">
+            <img src="{{ url_for('static', filename='logo-no_bg.png') }}" alt="" style="width: 50%;">
+        </div>
+    </footer>
+
+    <script>
+        let correctLetter = '{{ missing_letter }}'; // Change to let
+        let originalWord = '{{ blank_word }}'; // Change to let
+        let blankIndex = originalWord.indexOf('_'); // Change to let
+    
+        function checkAnswer(selectedLetter) {
+            const feedbackElement = document.getElementById('feedback');
+            const wordDisplay = document.getElementById('wordDisplay');
+            const correctSound = document.getElementById('correctSound');
+            const incorrectSound = document.getElementById('incorrectSound');
+    
+            console.log(`Selected Letter: ${selectedLetter}, Correct Letter: ${correctLetter}`);
+
+            fetch('/update_fill-in-missing-letter_answer_count', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ selectedLetter, correctLetter }) // Send user input and correct word to the server
+            });
+            
+            // Replace the blank with the selected letter
+            let updatedWord = wordDisplay.textContent;
+            updatedWord = updatedWord.slice(0, blankIndex) + selectedLetter.toUpperCase() + updatedWord.slice(blankIndex + 1);
+    
+            // Check if the answer is correct
+            if (selectedLetter === correctLetter) {
+                feedbackElement.textContent = "Correct! Great job!";
+                feedbackElement.className = "feedback correct";
+                correctSound.play();
+    
+                // Update user's correct answers and current streak
+                fetch('/update_stats', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        correct: true
+                    }),
+                });
+    
+                // Update the displayed word immediately
+                wordDisplay.textContent = updatedWord;
+    
+                // Fetch a new word after a brief delay
+                setTimeout(() => {
+                    fetch('/fill-in-missing-letters')  // Adjust this URL if necessary
+                        .then(response => response.text())
+                        .then(html => {
+                            // Replace the content with the new exercise
+                            document.body.innerHTML = html;
+    
+                            // Reinitialize the script context
+                            const newWordDisplay = document.getElementById('wordDisplay');
+                            const newCorrectLetter = document.getElementById('missing_letter').textContent; // Get the new correct letter from the HTML
+                            const newOriginalWord = document.getElementById('wordDisplay').textContent; // Get the new word from the HTML
+                            blankIndex = newOriginalWord.indexOf('_'); // Update blank index
+    
+                            // Update the local variables
+                            correctLetter = newCorrectLetter; // Update the correct letter
+                            originalWord = newOriginalWord; // Update the original word
+    
+                            // Log the new correct letter
+                            console.log(`New Selected Letter: ${correctLetter}`);
+                        });
+                }, 1000);
+            } else {
+                // If the answer is incorrect, keep the word displayed
+                feedbackElement.textContent = `Oops! The chosen letter was incorrect. Please try again!`;
+                feedbackElement.className = "feedback incorrect";
+                incorrectSound.play();
+    
+                // Update user's current streak if the answer is incorrect
+                fetch('/update_stats', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        correct: false
+                    }),
+                });
+            }
+        }
+        function speakWord(word) {
+    if (!word) {
+        console.error('No word provided for speech');
+        return; // Exit if no word is provided
+    }
+
+    fetch('/speak_word', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ word: word })
+    })
+    .then(response => response.json())
+    .then(data => {
+        const audio = new Audio(data.audio_file); // Use the base64 audio string
+        audio.play(); // Play the audio
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+    </script>
+</body>
+</html>
