@@ -3,202 +3,432 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Interactive Exercises</title>
+    <title>读写易AI - Personalized Dyslexia Support</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Open+Sans:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        /* Mobile-first responsive design */
         :root {
-            --primary-color: #34495e;
-            --secondary-color: #92b5d9;
-            --accent-color: #2ecc71;
-            --light-bg: #dbe8f4;
+            --primary: #4361ee;
+            --secondary: #095383;
+            --accent: #0097b2;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4bb543;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            background: linear-gradient(to bottom right, #dbe8f4, #8ab8e8);
-            color: #2c3e50;
-            padding: 1rem;
-            min-height: 100vh;
+            font-family: 'Open Sans', sans-serif;
+            background-color: #f5f7ff;
+            color: var(--dark);
+            line-height: 1.6;
+            padding: 0;
+            margin: 0;
         }
 
-        .username-form {
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header Styles */
+        .header {
             display: flex;
             flex-direction: column;
-            gap: 1rem;
-            max-width: 400px;
-            margin: 2rem auto;
-            padding: 2rem;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .username-form input {
-            padding: 0.8rem;
-            border: 2px solid var(--secondary-color);
-            border-radius: 5px;
-            font-size: 1rem;
-        }
-
-        .username-form button {
-            background-color: var(--accent-color);
+            align-items: center;
+            padding: 30px 20px;
+            text-align: center;
+            background: linear-gradient(135deg, #4361ee 0%, #3f37c9 100%);
             color: white;
-            padding: 0.8rem;
-            border: none;
-            border-radius: 5px;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0 4px 20px rgba(67, 97, 238, 0.2);
+            margin-bottom: 30px;
+        }
+
+        .logo-container {
+            width: 120px;
+            height: 120px;
+            background-color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-container img {
+            width: 80%;
+            height: auto;
+        }
+
+        .title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .title span {
+            color: var(--accent);
+        }
+
+        /* Description Section */
+        .description-section {
+            background-color: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .description-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .language-selector {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            background-color: white;
+            font-family: 'Open Sans', sans-serif;
+            color: var(--dark);
+        }
+
+        .description-content {
             font-size: 1.1rem;
+            color: #495057;
+        }
+
+        /* Feature Blocks */
+        .feature-blocks {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        @media (min-width: 768px) {
+            .feature-blocks {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .feature-block {
+            background-color: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .feature-block-1 {
+            background: linear-gradient(135deg, #f5f7ff 0%, #e6ebff 100%);
+            border: 2px solid var(--primary);
+        }
+
+        .feature-block-2 {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e6f7ff 100%);
+            border: 2px solid var(--accent);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .feature-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .feature-content {
+            font-size: 1rem;
+            color: #495057;
+            margin-bottom: 15px;
+        }
+
+        .team-photo {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Video Gallery */
+        .video-gallery {
+            margin-bottom: 30px;
+        }
+
+        .video-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .video-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* CTA Button */
+        .cta-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.2rem;
+            font-weight: 600;
+            padding: 15px 40px;
+            border-radius: 50px;
+            text-decoration: none;
+            box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+            transition: all 0.3s ease;
+            border: none;
             cursor: pointer;
         }
 
-        header {
-            background-color: var(--primary-color);
-            color: white;
-            padding: 1rem;
-            border-radius: 10px;
-            margin-bottom: 1rem;
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(67, 97, 238, 0.4);
+        }
+
+        /* Footer */
+        .footer {
             text-align: center;
-        }
-
-        .exercise-grid {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1rem;
-        }
-
-        .exercise-card {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 1.5rem;
-            text-align: center;
-        }
-
-        .exercise-card img {
-            width: 80px;
-            height: auto;
-            margin: 0 auto 1rem;
-        }
-
-        .start-btn {
-            display: inline-block;
-            background-color: var(--accent-color);
-            color: white;
-            padding: 0.8rem 1.5rem;
-            text-decoration: none;
-            border-radius: 5px;
-            font-size: 1rem;
-            margin-top: 1rem;
-        }
-
-        .hidden {
-            display: none;
-        }
-
-        footer {
-            margin-top: 2rem;
-            text-align: center;
-            padding: 1rem;
+            padding: 20px;
+            color: #6c757d;
             font-size: 0.9rem;
-            color: #777;
         }
 
-        @media (min-width: 480px) {
-            .exercise-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
+        /* List styles */
+        ul.feature-list {
+            padding-left: 20px;
+            color: #495057;
+        }
+
+        ul.feature-list li {
+            margin-bottom: 8px;
         }
     </style>
 </head>
 <body>
-    <!-- Username Input Form -->
-    <div id="usernameForm" class="username-form">
-        <h2>Enter Your Name to Begin</h2>
-        <input type="text" id="usernameInput" placeholder="Your name" required>
-        <button onclick="setUsername()">Start</button>
-    </div>
+    <!-- Header with Logo and Title -->
+    <header class="header">
+        <div class="logo-container">
+            <img src="logo-icon.png" alt="DyslexAI Logo">
+        </div>
+        <h1 class="title" id="project-title">读写易<span>AI</span></h1>
+    </header>
 
-    <!-- Main Content (hidden by default) -->
-    <div id="mainContent" class="hidden">
-        <header>
-            <h1>Welcome, <span id="displayUsername"></span>!</h1>
-            <p>Choose an exercise to develop essential skills</p>
-        </header>
-
-        <section class="exercise-grid">
-            <!-- Read-Along Exercise -->
-            <div class="exercise-card">
-                <img src="finger.png" alt="Read-Along">
-                <h2>Read-Along</h2>
-                <p>Practice reading with guided audio</p>
-                <a href="read-along.html" class="start-btn">Start</a>
+    <div class="container">
+        <!-- Description Section -->
+        <section class="description-section">
+            <div class="description-header">
+                <h2 class="section-title" id="intro-title">项目简介</h2>
+                <select class="language-selector" id="language-selector">
+                    <option value="English">English</option>
+                    <option value="Cantonese">廣東話</option>
+                    <option value="Mandarin">普通话</option>
+                </select>
             </div>
+            <p class="description-content" id="intro-content">
+                读写易AI旨在以个性化方式诊断和治疗读写障碍。每个孩子受读写障碍的影响不同，因此需要为每个孩子量身定制解决方案。通过利用人工智能的力量，我们的项目为每位用户创造最佳的学习环境，帮助他们克服挑战并释放全部潜能。
+            </p>
+        </section>
 
-            <!-- Writing Exercise -->
-            <div class="exercise-card">
-                <img src="online-learning.png" alt="Writing">
-                <h2>Writing</h2>
-                <p>Interactive writing activities</p>
-                <a href="typing_exercise.html" class="start-btn">Start</a>
+        <!-- Feature Blocks -->
+        <section class="feature-blocks">
+            <div class="feature-block feature-block-1">
+                <h3 class="feature-title" id="feature1-title">创新方法</h3>
+                <p class="feature-content" id="feature1-content">
+                    读写易AI将尖端人工智能与经过验证的教学方法相结合，创造自适应学习体验。我们的系统分析每个用户的独特模式，并实时调整练习以最大化学习效率。
+                </p>
+                <ul class="feature-list" id="feature1-list">
+                    <li>AI驱动的个性化学习路径</li>
+                    <li>互动式多感官练习</li>
+                    <li>实时进度追踪</li>
+                    <li>自适应难度调整</li>
+                </ul>
             </div>
-
-            <!-- Match the Pairs -->
-            <div class="exercise-card">
-                <img src="puzzle.png" alt="Matching">
-                <h2>Match the Pairs</h2>
-                <p>Memory and word association game</p>
-                <a href="match-pairs.html" class="start-btn">Start</a>
-            </div>
-
-            <!-- Fill the Missing Letter -->
-            <div class="exercise-card">
-                <img src="bear.png" alt="Missing Letters">
-                <h2>Fill the Missing Letter</h2>
-                <p>Spelling and vocabulary builder</p>
-                <a href="fill-in-missing-letters.html" class="start-btn">Start</a>
-            </div>
-
-            <!-- Word Scramble -->
-            <div class="exercise-card">
-                <img src="cubes.png" alt="Word Scramble">
-                <h2>Word Scramble</h2>
-                <p>Classic word puzzle challenge</p>
-                <a href="word_scramble.html" class="start-btn">Start</a>
+            <div class="feature-block feature-block-2">
+                <img src="team-photo.jpg" alt="DyslexAI Team" class="team-photo">
+                <p style="margin-top: 15px; text-align: center; font-weight: 600; color: var(--primary);" id="team-caption">
+                    读写易AI开发团队
+                </p>
             </div>
         </section>
 
-        <footer>
-            <img src="logo-no_bg.png" alt="Logo" style="width: 150px;">
-        </footer>
+        <!-- Video Gallery - First Row -->
+        <section class="video-gallery">
+            <h2 class="section-title" style="margin-bottom: 20px;" id="video-title1">观看读写易AI实际操作</h2>
+            <div class="video-grid">
+                <div class="video-container">
+                    <iframe src="https://www.youtube.com/embed/EXAMPLE1" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <div class="video-container">
+                    <iframe src="https://www.youtube.com/embed/EXAMPLE2" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+            </div>
+        </section>
+
+        <!-- Video Gallery - Second Row -->
+        <section class="video-gallery">
+            <div class="video-grid">
+                <div class="video-container">
+                    <iframe src="https://www.youtube.com/embed/EXAMPLE3" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <div class="video-container">
+                    <iframe src="https://www.youtube.com/embed/EXAMPLE4" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Button -->
+        <section class="cta-section">
+            <a href="dashboard.html" class="cta-button" id="cta-button">尝试互动演示</a>
+        </section>
     </div>
 
+    <footer class="footer">
+        <p id="copyright">© 2025 读写易AI. 版权所有。</p>
+        <p id="booth-info">项目编号 #IT-032</p>
+    </footer>
+
     <script>
-        // Check for existing username on load
-        document.addEventListener('DOMContentLoaded', function() {
-            const username = localStorage.getItem('username');
-            if (username) {
-                showMainContent(username);
+        // Translation data
+        const translations = {
+            English: {
+                projectTitle: "Dyslex<span>AI</span>",
+                introTitle: "Brief Intro",
+                introContent: "DyslexAI aims to diagnose and treat dyslexia in personalized ways. Dyslexia affects every child differently, therefore an individual solution tailored to each child is needed. By utilizing the power of AI, our project creates the optimal learning environment for each user, helping them overcome challenges and unlock their full potential.",
+                feature1Title: "Our Innovative Approach",
+                feature1Content: "DyslexAI combines cutting-edge artificial intelligence with proven pedagogical methods to create adaptive learning experiences. Our system analyzes each user's unique patterns and adjusts exercises in real-time to maximize learning efficiency.",
+                feature1List: [
+                    "AI-powered personalized learning paths",
+                    "Interactive multisensory exercises",
+                    "Real-time progress tracking",
+                    "Adaptive difficulty adjustment"
+                ],
+                teamCaption: "The DyslexAI Development Team",
+                videoTitle1: "See DyslexAI in Action",
+                ctaButton: "Try Our Interactive Demo",
+                copyright: "© 2025 DyslexAI. All rights reserved.",
+                boothInfo: "Project No #IT-032"
+            },
+            Cantonese: {
+                projectTitle: "讀寫易<span>AI</span>",
+                introTitle: "簡介",
+                introContent: "讀寫易AI旨在以個人化方式診斷同治療讀寫障礙。每個細路受讀寫障礙嘅影響都唔同，所以需要為每個細路量身定制解決方案。通過利用人工智能嘅力量，我哋嘅項目為每位用戶創造最佳嘅學習環境，幫助佢哋克服挑戰並發揮全部潛能。",
+                feature1Title: "我哋嘅創新方法",
+                feature1Content: "讀寫易AI將尖端人工智能同經過驗證嘅教學方法相結合，創造自適應學習體驗。我哋嘅系統分析每個用戶嘅獨特模式，並實時調整練習以最大化學習效率。",
+                feature1List: [
+                    "AI驅動嘅個性化學習路徑",
+                    "互動式多感官練習",
+                    "實時進度追蹤",
+                    "自適應難度調整"
+                ],
+                teamCaption: "讀寫易AI開發團隊",
+                videoTitle1: "睇讀寫易AI實際操作",
+                ctaButton: "試用互動演示",
+                copyright: "© 2025 讀寫易AI。版權所有。",
+                boothInfo: "項目編號 #IT-032"
+            },
+            Mandarin: {
+                projectTitle: "读写易<span>AI</span>",
+                introTitle: "项目简介",
+                introContent: "读写易AI旨在以个性化方式诊断和治疗读写障碍。每个孩子受读写障碍的影响不同，因此需要为每个孩子量身定制解决方案。通过利用人工智能的力量，我们的项目为每位用户创造最佳的学习环境，帮助他们克服挑战并释放全部潜能。",
+                feature1Title: "创新方法",
+                feature1Content: "读写易AI将尖端人工智能与经过验证的教学方法相结合，创造自适应学习体验。我们的系统分析每个用户的独特模式，并实时调整练习以最大化学习效率。",
+                feature1List: [
+                    "AI驱动的个性化学习路径",
+                    "互动式多感官练习",
+                    "实时进度追踪",
+                    "自适应难度调整"
+                ],
+                teamCaption: "读写易AI开发团队",
+                videoTitle1: "观看读写易AI实际操作",
+                ctaButton: "尝试互动演示",
+                copyright: "© 2025 读写易AI。版权所有。",
+                boothInfo: "项目编号 #IT-032"
             }
+        };
+
+        // Language selector functionality
+        document.getElementById('language-selector').addEventListener('change', function() {
+            const lang = this.value;
+            const translation = translations[lang];
+            
+            // Update all elements with translations
+            document.getElementById('project-title').innerHTML = translation.projectTitle;
+            document.getElementById('intro-title').textContent = translation.introTitle;
+            document.getElementById('intro-content').textContent = translation.introContent;
+            document.getElementById('feature1-title').textContent = translation.feature1Title;
+            document.getElementById('feature1-content').textContent = translation.feature1Content;
+            
+            // Update list items
+            const featureList = document.getElementById('feature1-list');
+            featureList.innerHTML = '';
+            translation.feature1List.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item;
+                featureList.appendChild(li);
+            });
+            
+            document.getElementById('team-caption').textContent = translation.teamCaption;
+            document.getElementById('video-title1').textContent = translation.videoTitle1;
+            document.getElementById('cta-button').textContent = translation.ctaButton;
+            document.getElementById('copyright').textContent = translation.copyright;
+            document.getElementById('booth-info').textContent = translation.boothInfo;
         });
 
-        function setUsername() {
-            const usernameInput = document.getElementById('usernameInput');
-            if (usernameInput.value.trim()) {
-                localStorage.setItem('username', usernameInput.value.trim());
-                showMainContent(usernameInput.value.trim());
-            }
-        }
-
-        function showMainContent(username) {
-            document.getElementById('usernameForm').classList.add('hidden');
-            document.getElementById('mainContent').classList.remove('hidden');
-            document.getElementById('displayUsername').textContent = username;
-        }
+        // Initialize with Mandarin by default
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('language-selector').value = 'Mandarin';
+        });
     </script>
 </body>
 </html>
