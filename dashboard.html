@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Interactive Exercises</title>
+    <style>
+        /* Mobile-first responsive design */
+        :root {
+            --primary-color: #34495e;
+            --secondary-color: #92b5d9;
+            --accent-color: #2ecc71;
+            --light-bg: #dbe8f4;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(to bottom right, #dbe8f4, #8ab8e8);
+            color: #2c3e50;
+            padding: 1rem;
+            min-height: 100vh;
+        }
+
+        .username-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            max-width: 400px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .username-form input {
+            padding: 0.8rem;
+            border: 2px solid var(--secondary-color);
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .username-form button {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .exercise-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .exercise-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .exercise-card img {
+            width: 80px;
+            height: auto;
+            margin: 0 auto 1rem;
+        }
+
+        .start-btn {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            margin-top: 1rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        footer {
+            margin-top: 2rem;
+            text-align: center;
+            padding: 1rem;
+            font-size: 0.9rem;
+            color: #777;
+        }
+
+        @media (min-width: 480px) {
+            .exercise-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Username Input Form -->
+    <div id="usernameForm" class="username-form">
+        <h2>Enter Your Name to Begin</h2>
+        <input type="text" id="usernameInput" placeholder="Your name" required>
+        <button onclick="setUsername()">Start</button>
+    </div>
+
+    <!-- Main Content (hidden by default) -->
+    <div id="mainContent" class="hidden">
+        <header>
+            <h1>Welcome, <span id="displayUsername"></span>!</h1>
+            <p>Choose an exercise to develop essential skills</p>
+        </header>
+
+        <section class="exercise-grid">
+            <!-- Read-Along Exercise -->
+            <div class="exercise-card">
+                <img src="finger.png" alt="Read-Along">
+                <h2>Read-Along</h2>
+                <p>Practice reading with guided audio</p>
+                <a href="read-along.html" class="start-btn">Start</a>
+            </div>
+
+            <!-- Writing Exercise -->
+            <div class="exercise-card">
+                <img src="online-learning.png" alt="Writing">
+                <h2>Writing</h2>
+                <p>Interactive writing activities</p>
+                <a href="typing_exercise.html" class="start-btn">Start</a>
+            </div>
+
+            <!-- Match the Pairs -->
+            <div class="exercise-card">
+                <img src="puzzle.png" alt="Matching">
+                <h2>Match the Pairs</h2>
+                <p>Memory and word association game</p>
+                <a href="match-pairs.html" class="start-btn">Start</a>
+            </div>
+
+            <!-- Fill the Missing Letter -->
+            <div class="exercise-card">
+                <img src="bear.png" alt="Missing Letters">
+                <h2>Fill the Missing Letter</h2>
+                <p>Spelling and vocabulary builder</p>
+                <a href="fill-in-missing-letters.html" class="start-btn">Start</a>
+            </div>
+
+            <!-- Word Scramble -->
+            <div class="exercise-card">
+                <img src="cubes.png" alt="Word Scramble">
+                <h2>Word Scramble</h2>
+                <p>Classic word puzzle challenge</p>
+                <a href="word_scramble.html" class="start-btn">Start</a>
+            </div>
+        </section>
+
+        <footer>
+            <img src="logo-no_bg.png" alt="Logo" style="width: 150px;">
+        </footer>
+    </div>
+
+    <script>
+        // Check for existing username on load
+        document.addEventListener('DOMContentLoaded', function() {
+            const username = localStorage.getItem('username');
+            if (username) {
+                showMainContent(username);
+            }
+        });
+
+        function setUsername() {
+            const usernameInput = document.getElementById('usernameInput');
+            if (usernameInput.value.trim()) {
+                localStorage.setItem('username', usernameInput.value.trim());
+                showMainContent(usernameInput.value.trim());
+            }
+        }
+
+        function showMainContent(username) {
+            document.getElementById('usernameForm').classList.add('hidden');
+            document.getElementById('mainContent').classList.remove('hidden');
+            document.getElementById('displayUsername').textContent = username;
+        }
+    </script>
+</body>
+</html>
