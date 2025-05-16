@@ -191,8 +191,7 @@
             // For demo purposes, we'll use sample stories
             // In a real app, this would call a text generation API
             currentStory = sampleStories[prompt.split(" ")[0]] || 
-                "This is a generated story based on your prompt: " + prompt + 
-                " The quick brown fox jumps over the lazy dog. Learning to read is fun and exciting!";
+                "This website is for you to get a feel of the software. Unfortunately, story generation is too complex and therefore only the audio is working in this small demo: " + prompt;
 
             document.getElementById('storyText').textContent = currentStory;
             document.getElementById('storyText').classList.remove('hidden');
