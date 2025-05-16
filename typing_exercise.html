@@ -2,279 +2,343 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Typing Game for Dyslexic Children</title>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        :root {
+            --primary: #3a7bd5;
+            --secondary: #00d2ff;
+            --correct: #28a745;
+            --incorrect: #dc3545;
+            --streak: #ff6f61;
+            --bg-gradient: linear-gradient(to bottom right, #f5f9ff, #94dbeb);
+            --card-bg: white;
+            --text-dark: #333;
+            --text-light: #f8f9fa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Open Sans', sans-serif;
-            max-width: 800px;
+            background: var(--bg-gradient);
+            color: var(--text-dark);
             min-height: 100vh;
-            margin: 0 auto;
-            background: linear-gradient(to bottom right, #f5f9ff, #94dbeb);
-            padding: 20px;
-            color: #333;
-        }
-        
-        h1 {
-            color: #3a7bd5;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-        
-        #game-container {
-            background-color: white;
-            border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        
-        #sentence {
-            font-size: 28px;
+            padding: 1rem;
             line-height: 1.6;
-            margin-bottom: 30px;
-            min-height: 100px;
-            padding: 15px;
+        }
+
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+            padding: 0.5rem;
+        }
+
+        #game-container {
+            background-color: var(--card-bg);
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+        }
+
+        #sentence {
+            font-size: 1.5rem;
+            line-height: 2rem;
+            margin-bottom: 1.5rem;
+            min-height: 6rem;
+            padding: 1rem;
             background-color: #f8f9fa;
             border-radius: 8px;
             border: 1px solid #e0e0e0;
             white-space: pre-wrap;
             letter-spacing: 1px;
+            word-break: break-word;
         }
-        
+
         #userInput {
             width: 100%;
-            padding: 15px;
-            font-size: 20px;
+            padding: 1rem;
+            font-size: 1.2rem;
             border: 2px solid #ddd;
             border-radius: 8px;
-            margin-bottom: 20px;
+            margin-bottom: 1rem;
             transition: border-color 0.3s;
         }
-        
+
         #userInput:focus {
             outline: none;
-            border-color: #3a7bd5;
+            border-color: var(--primary);
         }
-        
+
         .char {
             position: relative;
             transition: all 0.2s;
         }
-        
+
         .correct {
-            color: #28a745;
+            color: var(--correct);
         }
-        
+
         .incorrect {
-            color: #dc3545;
+            color: var(--incorrect);
         }
-        
+
         .highlight {
             background-color: rgba(40, 167, 69, 0.2);
             border-radius: 3px;
             padding: 0 2px;
         }
-        
+
         .highlight-wrong {
             background-color: rgba(220, 53, 69, 0.2);
             border-radius: 3px;
             padding: 0 2px;
         }
-        
+
         .current-char {
-            border-bottom: 3px solid #3a7bd5;
+            border-bottom: 3px solid var(--primary);
             animation: pulse 1s infinite;
         }
-        
+
         @keyframes pulse {
-            0% { border-bottom-color: #3a7bd5; }
-            50% { border-bottom-color: #00d2ff; }
-            100% { border-bottom-color: #3a7bd5; }
+            0% { border-bottom-color: var(--primary); }
+            50% { border-bottom-color: var(--secondary); }
+            100% { border-bottom-color: var(--primary); }
         }
-        
-        #stats-container {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+            margin-bottom: 1.5rem;
         }
-        
-        #timer, #streak, #accuracy {
-            font-size: 18px;
+
+        .stat-box {
+            font-size: 1rem;
             font-weight: 600;
-            padding: 10px 15px;
+            padding: 0.8rem;
             background-color: #e9f0ff;
             border-radius: 8px;
-        }
-        
-        #timer {
-            color: #3a7bd5;
-        }
-        
-        #streak {
-            color: #ff6f61;
-        }
-        
-        #accuracy {
-            color: #28a745;
-        }
-        
-        #congratsMessage {
-            font-size: 1.5em;
             text-align: center;
-            padding: 15px;
-            margin: 20px 0;
-            border-radius: 8px;
-            display: none;
-            transition: all 0.3s;
         }
-        
-        .success {
-            background-color: rgba(40, 167, 69, 0.2);
-            color: #28a745;
+
+        #timer {
+            color: var(--primary);
         }
-        
-        .error {
-            background-color: rgba(220, 53, 69, 0.2);
-            color: #dc3545;
+
+        #streak {
+            color: var(--streak);
         }
-        
-        .button-container {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        button {
-            padding: 12px 25px;
-            font-size: 16px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-        
-        #difficulty-rating {
-            display: flex;
-            justify-content: center;
-            margin-top: 2rem;
-        }
-        
-        #difficulty-rating button {
-            padding: 12px 25px;
-            border: 2px solid #ff6f61;
-            border-radius: 25px;
-            cursor: pointer;
-            background: none;
-            margin: 0 0.5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            transition: all 0.3s;
-        }
-        
-        #difficulty-rating button:hover {
-            background-color: rgba(255, 111, 97, 0.1);
-        }
-        
-        #difficulty-rating button i {
-            font-size: 1.5rem;
-            color: #ff6f61;
-            margin-bottom: 5px;
+
+        #accuracy {
+            color: var(--correct);
         }
 
         #difficulty-level {
-            font-size: 18px;
-            font-weight: 600;
-            padding: 10px 15px;
-            background-color: #e9f0ff;
-            border-radius: 8px;
             color: #6c757d;
         }
-        
-        #difficulty-rating button div {
-            font-size: 0.8rem;
+
+        #congratsMessage {
+            font-size: 1.2rem;
             text-align: center;
-            color: #ff6f61;
-            font-weight: bold;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            display: none;
         }
-        
+
+        .success {
+            background-color: rgba(40, 167, 69, 0.2);
+            color: var(--correct);
+        }
+
+        .error {
+            background-color: rgba(220, 53, 69, 0.2);
+            color: var(--incorrect);
+        }
+
+        .nav-link {
+            display: block;
+            text-align: center;
+            color: #4a4e69;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 1rem 0;
+        }
+
         .feedback-container {
-            margin-top: 30px;
-            padding: 20px;
-            background-color: white;
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background-color: var(--card-bg);
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
-        
-        .feedback-container h1 {
-            font-size: 1.5em;
-            margin-bottom: 15px;
+
+        .feedback-container h2 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            text-align: center;
+            color: var(--primary);
+        }
+
+        .feedback-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .feedback-btn {
+            padding: 0.8rem 1.2rem;
+            border: 2px solid var(--streak);
+            border-radius: 25px;
+            background: none;
+            color: var(--streak);
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-size: 0.9rem;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .footer img {
+            width: 50%;
+            max-width: 200px;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                max-width: 800px;
+                padding: 2rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            #sentence {
+                font-size: 1.8rem;
+                line-height: 2.5rem;
+            }
+            
+            .feedback-btn {
+                padding: 1rem 1.5rem;
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
 <body>
-    <br><br><br>
-    <div id="game-container">
-        <h1>Typing Game</h1>
-        
-        <div id="stats-container">
-            <div id="timer">Time Left: {{ time_limit }}s</div>
-            <div id="streak">Games Completed: {{ completed_games }}</div>
-            <div id="accuracy">Accuracy: {{ accuracy }}%</div>
-            <div id="difficulty-level">Difficulty: {{ difficulty }}/5</div>
+    <div class="container">
+        <div id="game-container">
+            <h1>Typing Game</h1>
+            
+            <div class="stats-grid">
+                <div class="stat-box" id="timer">Time: 60s</div>
+                <div class="stat-box" id="streak">Games: 0</div>
+                <div class="stat-box" id="accuracy">Accuracy: 100%</div>
+                <div class="stat-box" id="difficulty-level">Level: 3/5</div>
+            </div>
+            
+            <div id="sentence">The quick brown fox jumps over the lazy dog.</div>
+            <input type="text" id="userInput" autofocus placeholder="Start typing here..." />
+            <div id="congratsMessage"></div>
         </div>
+
+        <a href="dashboard.html" class="nav-link">Back to Dashboard</a>
         
-        <div id="sentence">{{ sentence_to_be_typed }}</div>
-        <input type="text" id="userInput" autofocus placeholder="Start typing here..." />
-        <div id="congratsMessage"></div>
+        <div class="feedback-container">
+            <h2>Your Feedback</h2>
+            <div class="feedback-buttons">
+                <button class="feedback-btn" onclick="changeDifficulty('easy')">
+                    <span>😊</span> Too Easy
+                </button>
+                <button class="feedback-btn" onclick="rateDifficulty('just_right')">
+                    <span>👍</span> Just Right
+                </button>
+                <button class="feedback-btn" onclick="changeDifficulty('hard')">
+                    <span>😞</span> Too Hard
+                </button>
+            </div>
+        </div>
     </div>
 
-    <div style="display: flex; justify-content: center; align-items: center; margin-top: 1em;">
-        <a href="/dashboard" style="color: #4a4e69;">Back to your Exercise Dashboard</a>
-    </div>
-    
-    <div class="feedback-container">
-        <h1>Your Feedback</h1>
-        <div id="difficulty-rating">
-            <span style="display: flex; flex-direction: row; justify-content: center; align-items: center;">
-                <button onclick="changeDifficulty('difficult')">
-                    <i class="fas fa-meh"></i>
-                    <div>Too Easy</div>
-                </button>
-                <button onclick="rateDifficulty('just_right')">
-                    <i class="fas fa-smile"></i>
-                    <div>Just Right</div>
-                </button>
-                <button onclick="changeDifficulty('easy')">
-                    <i class="fas fa-frown"></i>
-                    <div>Too Difficult</div>
-                </button>
-            </span>
-        </div>
-    </div>
-    <br><br><br>
-    <footer>
-        <div id="Row" style="display: flex; width: 100%; justify-content: center;">
-            <img src="{{ url_for('static', filename='logo-no_bg.png') }}" alt="" style="width: 50%;">
-        </div>
+    <footer class="footer">
+        <img src="logo-no_bg.png" alt="Company Logo">
     </footer>
 
     <script>
-        // Initialize game variables
-        let expectedSentence = document.getElementById('sentence').textContent;
+        // Game Data - Sentences categorized by difficulty
+        const sentencesByDifficulty = {
+            1: [
+                "Cat sat on mat.",
+                "Dog runs fast.",
+                "Sun is hot.",
+                "I like pie.",
+                "Big red ball."
+            ],
+            2: [
+                "The quick fox jumps.",
+                "Birds sing sweetly.",
+                "She reads books.",
+                "Blue sky above.",
+                "Cold winter night."
+            ],
+            3: [
+                "The quick brown fox jumps over the lazy dog.",
+                "Pack my box with five dozen liquor jugs.",
+                "How vexingly quick daft zebras jump!",
+                "Bright vixens jump; dozy fowl quack.",
+                "Sphinx of black quartz, judge my vow."
+            ],
+            4: [
+                "The juxtaposition of seemingly unrelated concepts often sparks creative innovation.",
+                "Quantum mechanics defies classical intuition through wave-particle duality.",
+                "Paleontologists meticulously excavate fossils using specialized tools and techniques.",
+                "The intricate interplay between genetics and environment shapes human development.",
+                "Cognitive dissonance arises when beliefs conflict with observable reality."
+            ],
+            5: [
+                "Pneumonoultramicroscopicsilicovolcanoconiosis, a lung disease caused by inhaling very fine silicate or quartz dust.",
+                "The antidisestablishmentarianism movement opposed the withdrawal of state support from an established church.",
+                "Floccinaucinihilipilification, the estimation of something as worthless, is ironically a very long word.",
+                "Pseudopseudohypoparathyroidism is an inherited disorder that resembles pseudohypoparathyroidism.",
+                "Supercalifragilisticexpialidocious, the song from Mary Poppins, means something extraordinary or magnificent."
+            ]
+        };
+
+        // Game State
+        let expectedSentence = "";
         let currentPosition = 0;
         let mistakes = 0;
         let totalTyped = 0;
         let timerInterval;
-        let timeLeft = parseInt("{{ time_limit }}") || 60;
-        let completedGames = parseInt("{{ completed_games }}") || 0;
-        let overallAccuracy = parseFloat("{{ accuracy }}") || 100;
-        
-        
+        let timeLeft = 60;
+        let completedGames = 0;
+        let overallAccuracy = 100;
+        let currentDifficulty = 3;
+        let currentStreak = 0;
+        let longestStreak = 0;
+
         // DOM elements
         const sentenceEl = document.getElementById('sentence');
         const userInput = document.getElementById('userInput');
@@ -282,17 +346,53 @@
         const timerEl = document.getElementById('timer');
         const streakEl = document.getElementById('streak');
         const accuracyEl = document.getElementById('accuracy');
-        
+        const difficultyEl = document.getElementById('difficulty-level');
+
         // Initialize the game
         function initGame() {
-            streakEl.textContent = `Games Completed: ${completedGames}`;
-            accuracyEl.textContent = `Accuracy: ${overallAccuracy}%`;
-            renderSentence();
+            // Load from localStorage if available
+            completedGames = parseInt(localStorage.getItem('typingGamesCompleted')) || 0;
+            overallAccuracy = parseFloat(localStorage.getItem('typingOverallAccuracy')) || 100;
+            currentStreak = parseInt(localStorage.getItem('typingCurrentStreak')) || 0;
+            longestStreak = parseInt(localStorage.getItem('typingLongestStreak')) || 0;
+            currentDifficulty = parseInt(localStorage.getItem('typingDifficulty')) || 3;
+            
+            updateStatsDisplay();
+            loadNewSentence();
             startTimer();
-            userInput.value = '';
             userInput.focus();
         }
-        
+
+        // Update all stats displays
+        function updateStatsDisplay() {
+            streakEl.textContent = `Games: ${completedGames}`;
+            accuracyEl.textContent = `Accuracy: ${Math.round(overallAccuracy)}%`;
+            difficultyEl.textContent = `Level: ${currentDifficulty}/5`;
+        }
+
+        // Load a new sentence
+        function loadNewSentence() {
+            // Get sentences for current difficulty level
+            const sentences = sentencesByDifficulty[currentDifficulty];
+            
+            // Select random sentence
+            expectedSentence = sentences[Math.floor(Math.random() * sentences.length)];
+            
+            // Reset game state
+            currentPosition = 0;
+            mistakes = 0;
+            totalTyped = 0;
+            
+            // Render the sentence
+            renderSentence();
+            
+            // Clear input
+            userInput.value = '';
+            
+            // Focus input field
+            userInput.focus();
+        }
+
         // Render the sentence with character spans
         function renderSentence() {
             sentenceEl.innerHTML = '';
@@ -304,7 +404,7 @@
             }
             updateCurrentChar();
         }
-        
+
         // Update the current character highlight
         function updateCurrentChar() {
             const chars = document.querySelectorAll('.char');
@@ -315,7 +415,7 @@
                 }
             });
         }
-        
+
         // Handle user input
         userInput.addEventListener('input', function(e) {
             const inputText = this.value;
@@ -351,30 +451,20 @@
                 
                 mistakes++;
                 totalTyped++;
-                
-                // Allow user to continue typing without deleting (optional)
-                // currentPosition++;
-            }
-            
-            // Update the accuracy update function
-            function updateAccuracy() {
-                if (totalTyped === 0) {
-                    accuracyEl.textContent = `Overall Accuracy: ${overallAccuracy}%`;
-                    return;
-                }
-                const currentAccuracy = Math.round(((totalTyped - mistakes) / totalTyped) * 100);
-                accuracyEl.textContent = `Current: ${currentAccuracy}% | Overall: ${overallAccuracy}%`;
             }
             
             // Update the current character highlight
             updateCurrentChar();
+            
+            // Update accuracy display
+            updateAccuracy();
             
             // Check if sentence is completed
             if (currentPosition >= expectedSentence.length) {
                 showCompletionMessage(true);
             }
         });
-        
+
         // Handle backspace
         userInput.addEventListener('keydown', function(e) {
             if (e.key === 'Backspace') {
@@ -388,127 +478,114 @@
                 }
             }
         });
-        
+
         // Update accuracy display
         function updateAccuracy() {
             if (totalTyped === 0) {
-                accuracyEl.textContent = 'Accuracy: 100%';
                 return;
             }
             const accuracy = Math.round(((totalTyped - mistakes) / totalTyped) * 100);
             accuracyEl.textContent = `Accuracy: ${accuracy}%`;
         }
-        
-        // In your typing_exercise.html JavaScript section
+
+        // Show completion message
         function showCompletionMessage(success) {
+            clearInterval(timerInterval);
+            
             if (success) {
-                congratsMessage.textContent = "Congratulations! You've typed it correctly!";
-                congratsMessage.className = 'success';
-                
+                // Calculate accuracy for this round
                 const accuracy = Math.round(((totalTyped - mistakes) / totalTyped) * 100);
                 
-                fetch('/complete_typing_exercise', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ accuracy: accuracy })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        streakEl.textContent = `Games Completed: ${data.completed_games}`;
-                        accuracyEl.textContent = `Accuracy: ${data.accuracy}%`;
-                    }
-                });
+                // Update stats
+                completedGames++;
+                currentStreak++;
+                
+                // Calculate new overall accuracy
+                const totalChars = parseFloat(localStorage.getItem('typingTotalChars')) || 0;
+                const correctChars = parseFloat(localStorage.getItem('typingCorrectChars')) || 0;
+                
+                const newTotalChars = totalChars + totalTyped;
+                const newCorrectChars = correctChars + (totalTyped - mistakes);
+                
+                overallAccuracy = Math.round((newCorrectChars / newTotalChars) * 100);
+                
+                // Update longest streak if needed
+                if (currentStreak > longestStreak) {
+                    longestStreak = currentStreak;
+                }
+                
+                // Save to localStorage
+                localStorage.setItem('typingGamesCompleted', completedGames);
+                localStorage.setItem('typingCurrentStreak', currentStreak);
+                localStorage.setItem('typingLongestStreak', longestStreak);
+                localStorage.setItem('typingTotalChars', newTotalChars);
+                localStorage.setItem('typingCorrectChars', newCorrectChars);
+                localStorage.setItem('typingOverallAccuracy', overallAccuracy);
+                
+                // Show success message
+                congratsMessage.textContent = "Great job! You completed the sentence!";
+                congratsMessage.className = 'success';
             } else {
-                congratsMessage.textContent = "That's not correct. Try again!";
+                // Reset streak
+                currentStreak = 0;
+                localStorage.setItem('typingCurrentStreak', currentStreak);
+                
+                // Show error message
+                congratsMessage.textContent = "Time's up! Try again!";
                 congratsMessage.className = 'error';
             }
             
             congratsMessage.style.display = 'block';
             userInput.value = '';
             
-            // Clear the existing timer
-            clearInterval(timerInterval);
+            // Update stats display
+            updateStatsDisplay();
             
+            // Load new sentence after delay
             setTimeout(() => {
                 congratsMessage.style.display = 'none';
-                setTimeout(loadNewSentence, 1000); // This will call startTimer()
-            }, 3000);
+                loadNewSentence();
+                startTimer();
+            }, 2000);
         }
-        
-        // Load a new sentence
-        function loadNewSentence() {
-            // Reset timer first
-            startTimer();
-            
-            // Fetch new sentence from server
-            fetch('/typing_exercise')
-                .then(response => response.text())
-                .then(html => {
-                    const parser = new DOMParser();
-                    const doc = parser.parseFromString(html, 'text/html');
-                    const newSentence = doc.querySelector('#sentence').textContent;
-                    
-                    expectedSentence = newSentence;
-                    currentPosition = 0;
-                    mistakes = 0;
-                    totalTyped = 0;
-                    updateAccuracy();
-                    renderSentence();
-                    userInput.focus();
-                })
-                .catch(error => {
-                    console.error('Error fetching new sentence:', error);
-                    // Fallback to default behavior if fetch fails
-                    expectedSentence = "The quick brown fox jumps over the lazy dog.";
-                    renderSentence();
-                    userInput.focus();
-                });
-        }
-        
+
         // Timer functions
         function startTimer() {
-            timeLeft = parseInt("{{ time_limit }}") || 60;
-            timerEl.textContent = `Time Left: ${timeLeft}s`;
+            timeLeft = 60;
+            timerEl.textContent = `Time: ${timeLeft}s`;
             clearInterval(timerInterval);
             timerInterval = setInterval(() => {
                 timeLeft--;
-                timerEl.textContent = `Time Left: ${timeLeft}s`;
+                timerEl.textContent = `Time: ${timeLeft}s`;
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
                     showCompletionMessage(false);
                 }
             }, 1000);
         }
-        
-        // Difficulty rating functions
-        function rateDifficulty(rating) {
-            console.log(`User rated the difficulty as: ${rating}`);
-            // In a real app, you would send this to your server
-        }
-        
-        function changeDifficulty(level) {
-            let adjustment = 0;
-            if (level === 'easy') {
-                adjustment = -1;
-            } else if (level === 'difficult') {
-                adjustment = 1;
-            }
 
-            fetch('/update_typing_exercise_difficulty', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ adjustment: adjustment })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.new_difficulty) {
-                    // Reload the page to get new difficulty settings
-                    window.location.reload();
-                }
-            });
+        // Difficulty adjustment
+        function changeDifficulty(level) {
+            if (level === 'easy' && currentDifficulty > 1) {
+                currentDifficulty--;
+            } else if (level === 'hard' && currentDifficulty < 5) {
+                currentDifficulty++;
+            }
+            
+            // Save difficulty
+            localStorage.setItem('typingDifficulty', currentDifficulty);
+            difficultyEl.textContent = `Level: ${currentDifficulty}/5`;
+            
+            // Load new sentence with new difficulty
+            loadNewSentence();
+            startTimer();
         }
-        
+
+        function rateDifficulty(rating) {
+            // In a real app, you might send this feedback to a server
+            console.log(`User rated difficulty as ${rating} for level ${currentDifficulty}`);
+        }
+
         // Initialize the game when the page loads
         window.addEventListener('DOMContentLoaded', initGame);
     </script>
