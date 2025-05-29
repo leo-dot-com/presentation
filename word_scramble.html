@@ -1,321 +1,204 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Word Scramble</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <style>
-        /* General Styles */
-        body {
-            font-family: 'Comic Sans MS', cursive, sans-serif;
-            background: linear-gradient(to bottom right, #ffebcd, #ffe4e1);
-            color: #333;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Word Scramble</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+  <style>
+    body {
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      background: linear-gradient(to bottom right, #ffebcd, #ffe4e1);
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-        .container {
-            background: white;
-            padding: 2rem;
-            margin: 1.8em;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            max-width: 800px;
-            width: 90%;
-            text-align: center;
-        }
+    .container {
+      background: white;
+      padding: 1.5rem;
+      margin: 1em;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      width: 95%;
+      max-width: 600px;
+      text-align: center;
+    }
 
-        h1 {
-            font-size: 2.5rem;
-            color: #4a4e69;
-            margin-bottom: 1.5rem;
-            margin-top: 0;
-        }
+    h1 {
+      font-size: 2rem;
+      color: #4a4e69;
+      margin-bottom: 1rem;
+    }
 
-        .letter {
-            display: inline-block;
-            padding: 10px 15px;
-            border: 2px solid #dcdcdc;
-            border-radius: 5px;
-            margin: 5px;
-            cursor: grab;
-            background-color: #f9f9f9;
-            font-size: 1.5rem;
-        }
+    .letter {
+      display: inline-block;
+      padding: 10px 15px;
+      border: 2px solid #dcdcdc;
+      border-radius: 5px;
+      margin: 5px;
+      cursor: grab;
+      background-color: #f9f9f9;
+      font-size: 1.5rem;
+    }
 
-        .dropzone {
-            border: 2px dashed #ff6f61;
-            padding: 20px;
-            min-height: 50px;
-            margin: 10px 0;
-            border-radius: 5px;
-            position: relative;
-        }
+    .dropzone {
+      border: 2px dashed #ff6f61;
+      padding: 20px;
+      min-height: 50px;
+      margin: 10px 0;
+      border-radius: 5px;
+    }
 
-        .correct {
-            background-color: #c8e6c9; /* Light green */
-        }
+    button {
+      padding: 12px 20px;
+      border: none;
+      border-radius: 25px;
+      background: linear-gradient(to right, #ff7f50, #ff6f61);
+      color: white;
+      cursor: pointer;
+      margin: 0.5rem;
+      width: 80%;
+      max-width: 300px;
+      font-size: 1rem;
+    }
 
-        .incorrect {
-            background-color: #ffccbc; /* Light red */
-        }
+    button:hover {
+      background: linear-gradient(to right, #ff6347, #ff6f61);
+    }
 
-        button {
-            padding: 14px 65px;
-            width: 45%;
-            border: none;
-            border-radius: 25px;
-            background: linear-gradient(to right, #ff7f50, #ff6f61);
-            color: white;
-            cursor: pointer;
-            margin: 0.5rem;
-            transition: background 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-        }
+    #result {
+      font-weight: bold;
+      margin-top: 10px;
+    }
 
-        button:hover {
-            background: linear-gradient(to right, #ff6347, #ff6f61);
-        }
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 1.5rem;
+      }
 
-        #difficulty-rating {
-            display: flex;
-            justify-content: center;
-            margin-top: 1rem;
-        }
-
-        #difficulty-rating button {
-            padding: 7.5px 80px;
-            border: 2px solid #ff6f61;
-            color: #ff6347;
-            border-radius: 25px;
-            cursor: pointer;
-            background: none;
-            margin: 0 0.5rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        #difficulty-rating button i {
-            font-size: 1.5rem;
-            color: #ff6f61;
-            margin-bottom: 5px;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 750px) {
-            h1 {
-                font-size: 2rem;
-            }
-
-            button {
-                padding: 10px 20px;
-                font-size: 0.9rem;
-            }
-        }
-    </style>
+      .letter {
+        font-size: 1.2rem;
+        padding: 8px 12px;
+      }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Word Scramble</h1>
-        <h2>Unscramble the word:</h2>
-        <div id="scrambled-word" style="display: flex; justify-content: center; align-items: center;">
-            {% for letter in scrambled_word %}
-                <div class="letter" draggable="true" ondragstart="drag(event)">{{ letter }}</div>
-            {% endfor %}
-            <i class="fas fa-volume-up" onclick="speakWord(document.getElementById('correct-word').value)" style="cursor: pointer; margin-left: 10px;"></i>
-        </div>
-        <h3>Drag the letters into the box below in the correct order:</h3>
-        <div class="dropzone" id="dropzone" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
-        <button onclick="checkWord()">Check Answer</button>
-        <p id="result" style="font-weight: bold;"></p>
-        <input type="hidden" id="correct-word" value="{{ correct_word }}">
-        <p>Words Completed: <span id="word-scramble-completed">{{ user.word_scramble_completed }}</span></p>
-    </div>
+  <div class="container">
+    <h1>Word Scramble</h1>
+    <h3>Unscramble the word:</h3>
+    <div id="scrambled-word" style="display: flex; flex-wrap: wrap; justify-content: center;"></div>
+    <i class="fas fa-volume-up" onclick="speakWord(currentWord)" style="cursor: pointer; margin: 10px;"></i>
+    <h3>Drag the letters below:</h3>
+    <div class="dropzone" id="dropzone" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+    <button onclick="checkWord()">Check Answer</button>
+    <p id="result"></p>
+    <p>Words Completed: <span id="words-completed">0</span></p>
+  </div>
 
-    <div style="display: flex; justify-content: center; align-items: center; margin-top: 1em;">
-        <a href="/dashboard" style="color: #4a4e69;">Back to your Exercise Dashboard</a>
-    </div>
+  <script>
+    const words = ["banana", "orange", "planet", "puzzle", "rocket", "python"];
+    let currentWord = "";
+    let wordsCompleted = 0;
 
-    <div class="container">
-        <h1 style="font-size: 2em;">Your Feedback</h1>
-        <div id="difficulty-rating" style="margin-top: 1.5rem;">
-            <span style="display: flex; flex-direction: row; justify-content: center; align-items: center;">
-                <button onclick="rateDifficulty('too_easy')">
-                    <i class="fas fa-meh"></i>
-                    <div>Too Easy</div>
-                </button>
-                <button onclick="rateDifficulty('just_right')">
-                    <i class="fas fa-smile"></i>
-                    <div>Just Right</div>
-                </button>
-                <button onclick="rateDifficulty('too_difficult')">
-                    <i class="fas fa-frown"></i>
-                    <div>Too Difficult</div>
-                </button>
-            </span>
-        </div>
-    </div>
-
-    <audio id="correctSound" src="{{ url_for('static', filename='audio/correct.mp3') }}"></audio>
-    <audio id="incorrectSound" src="{{ url_for('static', filename='audio/incorrect.mp3') }}"></audio>
-
-    <footer>
-        <div id="Row" style="display: flex; width: 100%; justify-content: center;">
-            <img src="{{ url_for('static', filename='logo-no_bg.png') }}" alt="" style="width: 50%;">
-        </div>
-    </footer>
-
-    <script>
-        function speakWord(word) {
-            fetch('/speak_word', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ word: word })
-            })
-            .then(response => response.json())
-            .then(data => {
-                const audio = new Audio(data.audio_file); // Use the base64 audio string
-                audio.play(); // Play the audio
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
-        }
-
-        function allowDrop(event) {
-            event.preventDefault();
-        }
-
-        function drag(event) {
-            event.dataTransfer.setData("text", event.target.innerText);
-        }
-
-        function drop(event) {
-            event.preventDefault();
-            const letter = event.dataTransfer.getData("text");
-            const dropzone = document.getElementById('dropzone');
-
-            // Create a new div for the dropped letter
-            const div = document.createElement('div');
-            div.className = 'letter';
-            div.innerText = letter;
-            div.onclick = function() {
-                returnToOptions(letter, div); // Add click handler to return letter
-            };
-            dropzone.appendChild(div);
-
-            // Remove the first matching letter from the scrambled word display
-            const letterElements = document.querySelectorAll('#scrambled-word .letter');
-            for (let el of letterElements) {
-                if (el.innerText === letter) {
-                    el.remove(); // Remove only the first matching letter
-                    break; // Exit the loop after removing one instance
-                }
-            }
-        }
-
-        function returnToOptions(letter, droppedDiv) {
-            const dropzone = document.getElementById('dropzone');
-            dropzone.removeChild(droppedDiv); // Remove the letter from the dropzone
-
-            // Create a new letter div to add back to the scrambled word display
-            const newLetterDiv = document.createElement('div');
-            newLetterDiv.className = 'letter';
-            newLetterDiv.innerText = letter;
-            newLetterDiv.draggable = true;
-            newLetterDiv.ondragstart = function(event) { drag(event); }; // Reassign drag event
-            document.getElementById('scrambled-word').appendChild(newLetterDiv); // Add back to options
-        }
-
-        function checkWord() {
-    const dropzone = document.getElementById('dropzone');
-    const userInput = Array.from(dropzone.children).map(child => child.innerText).join('');
-    const correctWord = document.getElementById('correct-word').value;
-    const correctSound = document.getElementById('correctSound');
-    const incorrectSound = document.getElementById('incorrectSound');
-    const resultElement = document.getElementById('result');
-
-    fetch('/update_word_scramble_answer_count', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ userInput, correctWord }) // Send user input and correct word to the server
-    });
-
-    if (userInput.toUpperCase() === correctWord.toUpperCase()) {
-        correctSound.play();
-        resultElement.innerText = "Correct! 🎉";
-        updateWordsCompleted();
-
-        setTimeout(() => {
-            fetch('/word_scramble', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            }).then(response => response.text())
-              .then(html => {
-                  const newContainer = document.createElement('div');
-                  newContainer.innerHTML = html;
-
-                  document.getElementById('scrambled-word').innerHTML = newContainer.querySelector('#scrambled-word').innerHTML;
-                  document.getElementById('dropzone').innerHTML = ''; // Clear the dropzone for the new game
-                  resultElement.innerText = ""; // Clear the result message after new game
-              }).catch(error => {
-                  console.error('Error fetching new scrambled word:', error);
-              });
-        }, 1000); // Show message for 1 second
-    } else {
-        incorrectSound.play();
-        resultElement.innerText = "Try Again! ❌";
+    function shuffleWord(word) {
+      const arr = word.split("");
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr.join("");
     }
-}
-        function rateDifficulty(rating) {
-            let adjustment = 0;
 
-            if (rating === 'too_easy') {
-                adjustment = 1;  // Increase difficulty
-            } else if (rating === 'too_difficult') {
-                adjustment = -1; // Decrease difficulty
-            }
+    function loadNewWord() {
+      const word = words[Math.floor(Math.random() * words.length)];
+      currentWord = word;
+      const scrambled = shuffleWord(word);
+      const scrambledContainer = document.getElementById("scrambled-word");
+      scrambledContainer.innerHTML = "";
 
-            fetch('/update_word_scramble_difficulty', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ adjustment: adjustment })
-            })
-            .then(response => response.json())
-            .then(data => {
-                const newDifficulty = data.new_difficulty;
-                const difficultyLevels = [
-                    "A Gentle Start! (0)",   // 0
-                    "Just a Little Easy! (1)", // 1
-                    "Perfectly Balanced! (2)",  // 2
-                    "A Fun Challenge! (3)",    // 3
-                ];
+      for (const letter of scrambled) {
+        const div = document.createElement("div");
+        div.className = "letter";
+        div.innerText = letter;
+        div.draggable = true;
+        div.ondragstart = drag;
+        scrambledContainer.appendChild(div);
+      }
 
-                const description = difficultyLevels[newDifficulty];
-                alert('Thank you for your feedback! We set the new difficulty level to ' + description);
-                window.location.href = '/word_scramble'; // Reloads the word scramble page
-            });
+      document.getElementById("dropzone").innerHTML = "";
+      document.getElementById("result").innerText = "";
+    }
+
+    function allowDrop(event) {
+      event.preventDefault();
+    }
+
+    function drag(event) {
+      event.dataTransfer.setData("text", event.target.innerText);
+    }
+
+    function drop(event) {
+      event.preventDefault();
+      const letter = event.dataTransfer.getData("text");
+      const dropzone = document.getElementById("dropzone");
+
+      const div = document.createElement("div");
+      div.className = "letter";
+      div.innerText = letter;
+      div.onclick = () => {
+        dropzone.removeChild(div);
+        addBackToScrambled(letter);
+      };
+      dropzone.appendChild(div);
+
+      const letterElements = document.querySelectorAll("#scrambled-word .letter");
+      for (let el of letterElements) {
+        if (el.innerText === letter) {
+          el.remove();
+          break;
         }
+      }
+    }
 
-        function updateWordsCompleted() {
-            const wordsCompletedElement = document.getElementById('word-scramble-completed');
-            let currentCount = parseInt(wordsCompletedElement.textContent);
-            wordsCompletedElement.textContent = currentCount + 1; // Increment the count
-        }
-    </script>
+    function addBackToScrambled(letter) {
+      const div = document.createElement("div");
+      div.className = "letter";
+      div.innerText = letter;
+      div.draggable = true;
+      div.ondragstart = drag;
+      document.getElementById("scrambled-word").appendChild(div);
+    }
+
+    function checkWord() {
+      const userWord = Array.from(document.getElementById("dropzone").children).map(c => c.innerText).join("");
+      const result = document.getElementById("result");
+
+      if (userWord.toLowerCase() === currentWord.toLowerCase()) {
+        result.innerText = "Correct! 🎉";
+        wordsCompleted++;
+        document.getElementById("words-completed").innerText = wordsCompleted;
+        setTimeout(loadNewWord, 1500);
+      } else {
+        result.innerText = "Try Again! ❌";
+      }
+    }
+
+    function speakWord(word) {
+      const utterance = new SpeechSynthesisUtterance(word);
+      utterance.lang = "en-US";
+      speechSynthesis.speak(utterance);
+    }
+
+    // Initialize game
+    loadNewWord();
+  </script>
 </body>
 </html>
