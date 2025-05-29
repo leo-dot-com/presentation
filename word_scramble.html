@@ -111,102 +111,129 @@
 
   <a href="dashboard.html" class="nav-link">Back to Dashboard</a>
 
-  <script>
-    const words = ["cat", "was", "saw", "game", "learn", "travel"];
-    let currentWord = "";
-    let wordsCompleted = 0;
+<script>
+  const words = ["cat", "was", "saw", "game", "learn", "travel"];
+  let currentWord = "";
+  let wordsCompleted = 0;
 
-    function shuffleWord(word) {
-      const arr = word.split("");
-      for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-      }
-      return arr.join("");
+  function shuffleWord(word) {
+    const arr = word.split("");
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [arr[i], arr[j]] = [arr[j], arr[i]];
     }
+    return arr.join("");
+  }
 
-    function loadNewWord() {
-      const word = words[Math.floor(Math.random() * words.length)];
-      currentWord = word;
-      const scrambled = shuffleWord(word);
-      const scrambledContainer = document.getElementById("scrambled-word");
-      scrambledContainer.innerHTML = "";
+  function loadNewWord() {
+    const word = words[Math.floor(Math.random() * words.length)];
+    currentWord = word;
+    const scrambled = shuffleWord(word);
+    const scrambledContainer = document.getElementById("scrambled-word");
+    scrambledContainer.innerHTML = "";
 
-      for (const letter of scrambled) {
-        const div = document.createElement("div");
-        div.className = "letter";
-        div.innerText = letter;
-        div.draggable = true;
-        div.ondragstart = drag;
-        scrambledContainer.appendChild(div);
-      }
-
-      document.getElementById("dropzone").innerHTML = "";
-      document.getElementById("result").innerText = "";
-    }
-
-    function allowDrop(event) {
-      event.preventDefault();
-    }
-
-    function drag(event) {
-      event.dataTransfer.setData("text", event.target.innerText);
-    }
-
-    function drop(event) {
-      event.preventDefault();
-      const letter = event.dataTransfer.getData("text");
-      const dropzone = document.getElementById("dropzone");
-
+    for (const letter of scrambled) {
       const div = document.createElement("div");
       div.className = "letter";
       div.innerText = letter;
-      div.onclick = () => {
-        dropzone.removeChild(div);
-        addBackToScrambled(letter);
-      };
-      dropzone.appendChild(div);
+      div.setAttribute("draggable", "true");
+      div.addEventListener("dragstart", drag);
+      div.addEventListener("touchstart", touchStart, { passive: true });
+      scrambledContainer.appendChild(div);
+    }
 
-      const letterElements = document.querySelectorAll("#scrambled-word .letter");
-      for (let el of letterElements) {
-        if (el.innerText === letter) {
-          el.remove();
-          break;
-        }
+    document.getElementById("dropzone").innerHTML = "";
+    document.getElementById("result").innerText = "";
+  }
+
+  function drag(event) {
+    event.dataTransfer.setData("text", event.target.innerText);
+    event.dataTransfer.setData("element", event.target.outerHTML);
+  }
+
+  function allowDrop(event) {
+    event.preventDefault();
+  }
+
+  function drop(event) {
+    event.preventDefault();
+    const letter = event.dataTransfer.getData("text");
+    const dropzone = document.getElementById("dropzone");
+
+    const div = createDropLetter(letter);
+    dropzone.appendChild(div);
+
+    removeLetterFromScrambled(letter);
+  }
+
+  function touchStart(event) {
+    const letter = event.target.innerText;
+    const dropzone = document.getElementById("dropzone");
+
+    const div = createDropLetter(letter);
+    dropzone.appendChild(div);
+
+    removeLetterFromScrambled(letter);
+  }
+
+  function createDropLetter(letter) {
+    const div = document.createElement("div");
+    div.className = "letter";
+    div.innerText = letter;
+    div.onclick = () => {
+      div.remove();
+      addBackToScrambled(letter);
+    };
+    return div;
+  }
+
+  function removeLetterFromScrambled(letter) {
+    const letterElements = document.querySelectorAll("#scrambled-word .letter");
+    for (let el of letterElements) {
+      if (el.innerText === letter) {
+        el.remove();
+        break;
       }
     }
+  }
 
-    function addBackToScrambled(letter) {
-      const div = document.createElement("div");
-      div.className = "letter";
-      div.innerText = letter;
-      div.draggable = true;
-      div.ondragstart = drag;
-      document.getElementById("scrambled-word").appendChild(div);
+  function addBackToScrambled(letter) {
+    const div = document.createElement("div");
+    div.className = "letter";
+    div.innerText = letter;
+    div.setAttribute("draggable", "true");
+    div.addEventListener("dragstart", drag);
+    div.addEventListener("touchstart", touchStart, { passive: true });
+    document.getElementById("scrambled-word").appendChild(div);
+  }
+
+  function checkWord() {
+    const userWord = Array.from(document.getElementById("dropzone").children)
+      .map(c => c.innerText)
+      .join("");
+    const result = document.getElementById("result");
+
+    if (userWord.toLowerCase() === currentWord.toLowerCase()) {
+      result.innerText = "Correct! 🎉";
+      wordsCompleted++;
+      document.getElementById("words-completed").innerText = wordsCompleted;
+      setTimeout(loadNewWord, 1500);
+    } else {
+      result.innerText = "Try Again! ❌";
     }
+  }
 
-    function checkWord() {
-      const userWord = Array.from(document.getElementById("dropzone").children).map(c => c.innerText).join("");
-      const result = document.getElementById("result");
+  function speakWord(word) {
+    const utterance = new SpeechSynthesisUtterance(word);
+    utterance.lang = "en-US";
+    speechSynthesis.speak(utterance);
+  }
 
-      if (userWord.toLowerCase() === currentWord.toLowerCase()) {
-        result.innerText = "Correct! 🎉";
-        wordsCompleted++;
-        document.getElementById("words-completed").innerText = wordsCompleted;
-        setTimeout(loadNewWord, 1500);
-      } else {
-        result.innerText = "Try Again! ❌";
-      }
-    }
+  // Initialize game
+  document.getElementById("dropzone").addEventListener("dragover", allowDrop);
+  document.getElementById("dropzone").addEventListener("drop", drop);
+  loadNewWord();
+</script>
 
-    function speakWord(word) {
-      const utterance = new SpeechSynthesisUtterance(word);
-      utterance.lang = "en-US";
-      speechSynthesis.speak(utterance);
-    }
-
-    // Initialize game
-    loadNewWord();
-  </script>
 </body>
 </html>
