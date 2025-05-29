@@ -159,16 +159,16 @@
     </div>
 
     <script>
-        // Game Data - Can be expanded with more word pairs
+        // Game Data - Pairs of related words
         const wordPairs = [
-            ["CAT", "DOG"],
-            ["SUN", "MOON"],
-            ["TREE", "LEAF"],
-            ["BOOK", "PEN"],
-            ["HAPPY", "SAD"],
-            ["UP", "DOWN"],
-            ["HOT", "COLD"],
-            ["DAY", "NIGHT"]
+            {pair: ["CAT", "DOG"], category: "Animals"},
+            {pair: ["SUN", "MOON"], category: "Celestial"},
+            {pair: ["TREE", "LEAF"], category: "Nature"},
+            {pair: ["BOOK", "PEN"], category: "Objects"},
+            {pair: ["HAPPY", "SAD"], category: "Emotions"},
+            {pair: ["UP", "DOWN"], category: "Directions"},
+            {pair: ["HOT", "COLD"], category: "Temperatures"},
+            {pair: ["DAY", "NIGHT"], category: "Time"}
         ];
 
         // Game State
@@ -179,6 +179,7 @@
         let gamesCompleted = localStorage.getItem('matchPairsGamesCompleted') || 0;
         let currentStreak = localStorage.getItem('matchPairsCurrentStreak') || 0;
         let longestStreak = localStorage.getItem('matchPairsLongestStreak') || 0;
+        let currentPairs = [];
 
         // Initialize Game
         function initGame() {
@@ -186,13 +187,15 @@
             gameGrid.innerHTML = '';
             
             // Select random word pairs (4 pairs for 8 cards)
-            const selectedPairs = [...wordPairs].sort(() => 0.5 - Math.random()).slice(0, 4);
+            currentPairs = [...wordPairs].sort(() => 0.5 - Math.random()).slice(0, 4);
             const cards = [];
             
-            // Create card elements
-            selectedPairs.forEach(pair => {
-                cards.push(createCard(pair[0]));
-                cards.push(createCard(pair[1]));
+            // Create card elements with pair information
+            currentPairs.forEach(pairObj => {
+                pairObj.pair.forEach(word => {
+                    const card = createCard(word, pairObj.category);
+                    cards.push(card);
+                });
             });
             
             // Shuffle and add to grid
@@ -203,13 +206,17 @@
             // Update stats display
             document.getElementById('gamesCompleted').textContent = gamesCompleted;
             document.getElementById('currentStreak').textContent = currentStreak;
+            
+            // Reset matched pairs counter
+            matchedPairs = 0;
         }
 
-        // Create card element
-        function createCard(word) {
+        // Create card element with pair category
+        function createCard(word, category) {
             const card = document.createElement('div');
             card.className = 'card';
             card.dataset.word = word;
+            card.dataset.category = category;
             
             const front = document.createElement('div');
             front.className = 'front';
@@ -242,9 +249,10 @@
             checkForMatch();
         }
 
-        // Check if cards match
+        // Check if cards belong to the same pair
         function checkForMatch() {
-            const isMatch = firstCard.dataset.word === secondCard.dataset.word;
+            // Cards match if they have the same category
+            const isMatch = firstCard.dataset.category === secondCard.dataset.category;
             
             if (isMatch) {
                 disableCards();
@@ -259,7 +267,7 @@
             secondCard.classList.add('matched');
             matchedPairs++;
             
-            if (matchedPairs === 4) {
+            if (matchedPairs === currentPairs.length) {
                 currentStreak++;
                 gamesCompleted++;
                 if (currentStreak > longestStreak) {
@@ -300,7 +308,6 @@
 
         // Reset entire game
         function resetGame() {
-            matchedPairs = 0;
             initGame();
         }
 
